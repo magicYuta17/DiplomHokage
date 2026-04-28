@@ -57,7 +57,8 @@ namespace Kursivoy_Konkin.Manager
                         c.Name_contract AS 'Наименование контракта',
                         o.cost AS 'Стоимость',
                         c.date_signing AS 'Дата подписи',
-                        o.building_dates AS 'Сроки строительства',
+                        o.building_dates_plan AS 'Срок строительства (план)',
+                        o.prepay AS 'Обязятельная предоплата',
                         -- Данные клиента
                         cl.ID_Client AS 'ID Клиента',
                         cl.FullName_client AS 'ФИО Клиента',
@@ -146,9 +147,10 @@ namespace Kursivoy_Konkin.Manager
                 int contractId = Convert.ToInt32(dataRow["ID_Contract"]);
                 string namContract = dataRow["Наименование контракта"].ToString();
                 string cost = dataRow["Стоимость"].ToString();
+                string prepay = dataRow["Обязятельная предоплата"].ToString();
                 string dateSigning = Convert.ToDateTime(dataRow["Дата подписи"]).ToString("dd.MM.yyyy");
                 string endDate = Convert.ToDateTime(dataRow["Дата окончание договора о строительстве"]).ToString("dd.MM.yyyy");
-                string constrDates = dataRow["Сроки строительства"].ToString();
+                string constrDates = dataRow["Срок строительства (план)"].ToString();
                 int clientId = Convert.ToInt32(dataRow["ID Клиента"]);
                 int workerId = Convert.ToInt32(dataRow["ID Работника"]);
 
@@ -205,7 +207,13 @@ namespace Kursivoy_Konkin.Manager
 
                 try
                 {
-                    var wordDocument = word.Documents.Add(fileName);
+                    // Открываем документ с необходимыми параметрами
+                    var wordDocument = word.Documents.Open(
+                        FileName: fileName,
+                        ConfirmConversions: false,
+                        ReadOnly: false,
+                        AddToRecentFiles: false
+                    );
 
                     ReplaceWordStub("{date_signing}", dateSigning, wordDocument);
                     ReplaceWordStub("{END_DATE}", endDate, wordDocument);
@@ -213,6 +221,7 @@ namespace Kursivoy_Konkin.Manager
                     ReplaceWordStub("{worker_ID_worker}", workerFio, wordDocument);
                     ReplaceWordStub("{Name_contract}", namContract, wordDocument);
                     ReplaceWordStub("{Cost}", cost, wordDocument);
+                    ReplaceWordStub("{prepay}", prepay, wordDocument);
                     ReplaceWordStub("{Construction_Dates}", constrDates, wordDocument);
 
                     word.Visible = true;
