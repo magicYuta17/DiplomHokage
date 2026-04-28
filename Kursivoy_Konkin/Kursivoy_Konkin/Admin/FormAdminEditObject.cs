@@ -34,21 +34,27 @@ namespace Kursivoy_Konkin
             TextBoxFilters.InputValidators.ApplyNotEmptyValidation(txtCost);
             TextBoxFilters.InputValidators.ApplyNotEmptyValidation(txt_float);
             TextBoxFilters.InputValidators.ApplyNotEmptyValidation(txtParkingSpace);
-            TextBoxFilters.InputValidators.ApplyNotEmptyValidation(txtDateDay);
+            TextBoxFilters.InputValidators.ApplyNotEmptyValidation(txtDateDayPlan);
+
+
+            TextBoxFilters.InputValidators.ApplyRussianWithDigitsAndComma(txtNameObject);
 
             // Применяем валидацию "только цифры с десятичным разделителем"
             TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txt_Square);
+            TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txtprocent_prepay);
             TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txtParkingSpace);
             TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txt_float);
             TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txtCost);
-            TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txtDateDay);
+            TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txtDateDayPlan);
 
             // Устанавливаем максимальную длину для полей (ограничение на количество символов)
             txt_Square.MaxLength = 4;       // Площадь (до 9999)
+            txtprocent_prepay.MaxLength = 2;       // Площадь (до 9999)
+            txtNameObject.MaxLength = 100;  // нАименование объекта
             txtCost.MaxLength = 12;         // Стоимость (до 999999999999)
             txt_float.MaxLength = 2;         // Количество этажей (до 99)
             txtParkingSpace.MaxLength = 4;   // Площадь парковки (до 9999)
-            txtDateDay.MaxLength = 4;        // Срок строительства в днях (до 9999)
+            txtDateDayPlan.MaxLength = 4;        // Срок строительства в днях (до 9999)
         }
 
         // Метод для загрузки данных объекта из БД
@@ -56,7 +62,7 @@ namespace Kursivoy_Konkin
         {
             try
             {
-                string query = "SELECT square, cost, building_dates, number_floors, parking_space, photo FROM object WHERE ID_object = @id";
+                string query = "SELECT name_object, procent_prepay, square, cost, building_dates_plan,building_dates_fact, number_floors, parking_space, photo FROM object WHERE ID_object = @id";
                 using (MySqlConnection conn = new MySqlConnection(connect.con))
                 {
                     conn.Open(); // Открываем соединение
@@ -71,7 +77,10 @@ namespace Kursivoy_Konkin
                                 // Заполняем поля формы данными из БД
                                 txt_Square.Text = reader["square"].ToString();           // Площадь
                                 txtCost.Text = reader["cost"].ToString();                 // Стоимость
-                                txtDateDay.Text = reader["building_dates"].ToString();    // Срок строительства
+                                txtprocent_prepay.Text = reader["procent_prepay"].ToString();                 // предоплата
+                                txtNameObject.Text = reader["name_object"].ToString();    // Срок строительства (план)
+                                txtDateDayPlan.Text = reader["building_dates_plan"].ToString();    // Срок строительства (план)
+                                txtDateDayFact.Text = reader["building_dates_fact"].ToString();    // Срок строительства (фактический)
                                 txt_float.Text = reader["number_floors"].ToString();      // Количество этажей
                                 txtParkingSpace.Text = reader["parking_space"].ToString(); // Площадь парковки
 
@@ -108,10 +117,12 @@ namespace Kursivoy_Konkin
             {
                 // Преобразуем текстовые значения в числа
                 double square = Convert.ToDouble(txt_Square.Text);               // Площадь
+                double procent_prepay = Convert.ToDouble(txtprocent_prepay.Text);               // Площадь
                 double cost = Convert.ToDouble(txtCost.Text);                     // Стоимость
+                string nameob= txtNameObject.Text;                     // Наименование объекта
                 double parkingSpace = Convert.ToDouble(txtParkingSpace.Text);     // Площадь парковки
                 double floors = Convert.ToDouble(txt_float.Text);                 // Количество этажей
-                double dateDay = Convert.ToDouble(txtDateDay.Text);               // Срок строительства
+                double dateDay = Convert.ToDouble(txtDateDayPlan.Text);               // Срок строительства
 
                 // Если выбрали новое фото — копируем его
                 string photoName = currentPhoto; // по умолчанию оставляем старое
@@ -133,8 +144,11 @@ namespace Kursivoy_Konkin
                 // SQL-запрос на обновление данных объекта
                 string query = @"UPDATE object SET
                                     square          = @square,
+                                    procent_prepay  = @procent_prepay,
+                                    name_object     = @name_object,
                                     cost            = @cost,
-                                    building_dates  = @building_dates,
+                                    building_dates_plan  = @building_dates_plan,
+                                    building_dates_fact  = @building_dates_fact,
                                     number_floors   = @number_floors,
                                     parking_space   = @parking_space,
                                     photo           = @photo
@@ -147,8 +161,11 @@ namespace Kursivoy_Konkin
                     {
                         // Добавляем параметры со значениями
                         cmd.Parameters.Add("@square", MySqlDbType.Decimal).Value = square;
+                        cmd.Parameters.Add("@procent_prepay", MySqlDbType.Decimal).Value = procent_prepay;
                         cmd.Parameters.Add("@cost", MySqlDbType.Decimal).Value = cost;
-                        cmd.Parameters.Add("@building_dates", MySqlDbType.Int32).Value = (int)dateDay;
+                        cmd.Parameters.Add("@name_object", MySqlDbType.VarChar, 100).Value = nameob;
+                        cmd.Parameters.Add("@building_dates_plan", MySqlDbType.Int32).Value = (int)dateDay;
+                        cmd.Parameters.Add("@building_dates_fact", MySqlDbType.Int32).Value = (int)dateDay;
                         cmd.Parameters.Add("@number_floors", MySqlDbType.Int32).Value = (int)floors;
                         cmd.Parameters.Add("@parking_space", MySqlDbType.Decimal).Value = parkingSpace;
                         cmd.Parameters.Add("@photo", MySqlDbType.VarChar, 50).Value = photoName; // Имя файла фото
@@ -173,7 +190,8 @@ namespace Kursivoy_Konkin
         {
             // Проверка заполненности всех полей
             if (string.IsNullOrWhiteSpace(txtCost.Text) ||
-                string.IsNullOrWhiteSpace(txtDateDay.Text) ||
+                string.IsNullOrWhiteSpace(txtDateDayPlan.Text) ||
+                string.IsNullOrWhiteSpace(txtprocent_prepay.Text) ||
                 string.IsNullOrWhiteSpace(txtParkingSpace.Text) ||
                 string.IsNullOrWhiteSpace(txt_float.Text) ||
                 string.IsNullOrWhiteSpace(txt_Square.Text))

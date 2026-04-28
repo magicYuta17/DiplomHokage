@@ -35,9 +35,12 @@ namespace Kursivoy_Konkin
             TextBoxFilters.InputValidators.ApplyNotEmptyValidation(txt_float);
             TextBoxFilters.InputValidators.ApplyNotEmptyValidation(txtParkingSpace);
             TextBoxFilters.InputValidators.ApplyNotEmptyValidation(txtDateDay);
+                
+            TextBoxFilters.InputValidators.ApplyRussianWithDigitsAndComma(txtNameObject);
 
             // Применяем валидацию "только цифры с десятичным разделителем"
             TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txt_Square);
+            TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txtprocent_prepay);
             TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txtParkingSpace);
             TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txt_float);
             TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txtCost);
@@ -45,6 +48,8 @@ namespace Kursivoy_Konkin
 
             // Устанавливаем максимальную длину для полей (ограничение на количество символов)
             txt_Square.MaxLength = 4;       // Площадь (до 9999)
+            txtNameObject.MaxLength = 100;       // Площадь (до 9999)
+            txtprocent_prepay.MaxLength = 2;
             txtCost.MaxLength = 12;         // Стоимость (до 999999999999)
             txt_float.MaxLength = 2;         // Количество этажей (до 99)
             txtParkingSpace.MaxLength = 4;   // Площадь парковки (до 9999)
@@ -68,7 +73,9 @@ namespace Kursivoy_Konkin
                 // Преобразуем текстовые значения в числа
                 double Square = Convert.ToDouble(txt_Square.Text);               // Площадь
                 double count = Convert.ToDouble(txtCost.Text);                   // Стоимость
+                double procent_prepay = Convert.ToDouble(txtprocent_prepay.Text);                   // Стоимость
                 double ParkingSpace = Convert.ToDouble(txtParkingSpace.Text);    // Площадь парковки
+                string NameObject = txtNameObject.Text;                         // Наименование объекта
                 double floatObject = Convert.ToDouble(txt_float.Text);           // Количество этажей
                 double DateDay = Convert.ToDouble(txtDateDay.Text);              // Срок строительства
                 string photoName = fileName; // Имя файла фото
@@ -100,8 +107,8 @@ namespace Kursivoy_Konkin
 
                 // SQL-запрос для вставки нового объекта
                 string query = $@"INSERT INTO object
-                           (square, cost, building_dates, number_floors, parking_space, photo) VALUES
-                           (@Square,@cost,@building_dates,@number_floors,@parking_space,@photo)";
+                           (name_object, procent_prepay,square, cost, building_dates_plan, number_floors, parking_space, photo) VALUES
+                           (@name_object, @procent_prepay, @Square,@cost,@building_dates_plan,@number_floors,@parking_space,@photo)";
 
                 try
                 {
@@ -113,7 +120,9 @@ namespace Kursivoy_Konkin
                             // Добавляем параметры со значениями
                             cmd.Parameters.Add("@Square", MySqlDbType.Decimal).Value = Square;
                             cmd.Parameters.Add("@cost", MySqlDbType.Decimal).Value = count;
-                            cmd.Parameters.Add("@building_dates", MySqlDbType.Int32).Value = DateDay;
+                            cmd.Parameters.Add("@procent_prepay", MySqlDbType.Decimal).Value = procent_prepay;
+                            cmd.Parameters.Add("@name_object", MySqlDbType.VarChar, 100).Value = NameObject;
+                            cmd.Parameters.Add("@building_dates_plan", MySqlDbType.Int32).Value = DateDay;
                             cmd.Parameters.Add("@number_floors", MySqlDbType.Int32).Value = floatObject;
                             cmd.Parameters.Add("@parking_space", MySqlDbType.Decimal).Value = ParkingSpace;
                             cmd.Parameters.Add("@photo", MySqlDbType.VarChar, 50).Value = photoName;
@@ -125,6 +134,8 @@ namespace Kursivoy_Konkin
 
                                 // Очищаем поля формы
                                 txt_Square.Clear();
+                                txtprocent_prepay.Clear();
+                                txtNameObject.Clear();
                                 txtCost.Clear();
                                 txtParkingSpace.Clear();
                                 txt_float.Clear();
@@ -195,6 +206,7 @@ namespace Kursivoy_Konkin
             // Проверка заполненности всех полей
             if (string.IsNullOrWhiteSpace(txtCost.Text) ||
                 string.IsNullOrWhiteSpace(txtDateDay.Text) ||
+                string.IsNullOrWhiteSpace(txtNameObject.Text) ||
                 string.IsNullOrWhiteSpace(txtParkingSpace.Text) ||
                 string.IsNullOrWhiteSpace(txt_float.Text) ||
                 string.IsNullOrWhiteSpace(txt_Square.Text))
@@ -232,5 +244,7 @@ namespace Kursivoy_Konkin
                 e.Cancel = true; //отменяем закрытие формы
             }
         }
+
+        
     }
 }

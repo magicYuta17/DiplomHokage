@@ -232,6 +232,8 @@ namespace Kursivoy_Konkin
             {
                 dataGridView1.Columns.Clear();
 
+
+
                 string query = @"
                     SELECT 
                         c.ID_Client,
@@ -499,7 +501,7 @@ namespace Kursivoy_Konkin
 
                 if (isMasked)
                     display.Rows.Add(
-                        MaskFio(fio),
+                        fio,
                         MaskPhone(phone),
                         "**.**.**** ",
                         age,

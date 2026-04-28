@@ -46,37 +46,28 @@ namespace Kursivoy_Konkin
 
                 // Сложный SQL-запрос с объединением нескольких таблиц (contract, object, clients, worker)
                 string query = @"
-           SELECT 
-                    c.ID_Contract,
-                    c.Name_contract AS 'Наименование контракта',
-                    o.cost AS 'Стоимость',
-                    c.date_signing AS 'Дата подписи',
-                    o.building_dates AS 'Сроки строительства',
-    
-                    -- Данные клиента
-                    cl.ID_Client AS 'ID Клиента',
-                    cl.FullName_client AS 'ФИО Клиента',
-                    cl.phone AS 'Телефон клиента',
-    
-                    -- Данные работника
-                    w.ID_worker AS 'ID Работника',
-                    w.FIO AS 'ФИО Работника',
-                    w.phone AS 'Телефон работника',
-    
-                    c.connection_contract_object_idconnection_contract_object,
-                    c.END_DATE AS 'Дата окончание договора о строительстве'         
+                   SELECT 
+                        c.ID_Contract,
+                        c.Name_contract AS 'Наименование контракта',
+                        o.cost AS 'Стоимость',
+                        c.date_signing AS 'Дата подписи',
+                        o.building_dates AS 'Сроки строительства',
+                        -- Данные клиента
+                        cl.ID_Client AS 'ID Клиента',
+                        cl.FullName_client AS 'ФИО Клиента',
+                        cl.phone AS 'Телефон клиента',
+                        -- Данные работника
+                        w.ID_worker AS 'ID Работника',
+                        w.FIO AS 'ФИО Работника',
+                        w.phone AS 'Телефон работника',
+                        c.END_DATE AS 'Дата окончание договора о строительстве'         
+                    FROM contract c
+                    LEFT JOIN clients cl ON cl.ID_Client = c.Clients_ID_Client
+                    LEFT JOIN object o ON c.object_ID_object = o.ID_object
+                    LEFT JOIN worker w ON w.ID_worker = c.worker_ID_worker;";
 
-                FROM contract c
 
-                LEFT JOIN object o 
-                    ON o.connection_contract_object_idconnection_contract_object 
-                     = c.connection_contract_object_idconnection_contract_object
 
-                LEFT JOIN clients cl 
-                    ON cl.ID_Client = c.Clients_ID_Client
-
-                LEFT JOIN worker w 
-                    ON w.ID_worker = c.worker_ID_worker;";
 
                 using (var connection = new MySqlConnection(connect.con)) // Создаем подключение к БД
                 using (var command = new MySqlCommand(query, connection)) // Создаем команду с запросом

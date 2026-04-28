@@ -24,7 +24,8 @@ namespace Kursivoy_Konkin
             {
                 RussianLetters,
                 NumericWithDecimal,
-                NotEmpty
+                NotEmpty,
+                RussianWithDigitsAndComma
             }
 
             // Класс для хранения информации о валидаторе, связанного с контролом
@@ -52,8 +53,6 @@ namespace Kursivoy_Konkin
                 // Проверка на null
                 if (textBox == null) throw new ArgumentNullException(nameof(textBox));
 
-                const int maxLen = 50; // Максимальная длина
-                textBox.MaxLength = maxLen; // Устанавливаем максимум
 
                 // Переменная для отслеживания внутренних изменений, чтобы избежать рекурсии
                 bool internalChange = false;
@@ -80,9 +79,7 @@ namespace Kursivoy_Konkin
                     int selStart = textBox.SelectionStart; // Сохраняем позицию курсора
                     string cleaned = FilterRussianLetters(textBox.Text); // Фильтрация
 
-                    // Ограничение по длине
-                    if (cleaned.Length > maxLen)
-                        cleaned = cleaned.Substring(0, maxLen);
+                   
 
                     // Если текст изменился, обновляем его и позицию курсора
                     if (cleaned != textBox.Text)
@@ -95,7 +92,7 @@ namespace Kursivoy_Konkin
                 };
 
                 // Регистрация контролла в системе валидаторов
-                RegisterControl(textBox, ValidatorType.RussianLetters, maxLen);
+                RegisterControl(textBox, ValidatorType.RussianLetters);
             }
 
             // Метод для применения фильтрации чисел с точкой или запятой
@@ -155,7 +152,7 @@ namespace Kursivoy_Konkin
                 };
 
                 // Регистрация
-                RegisterControl(textBox, ValidatorType.NumericWithDecimal, maxLen);
+                RegisterControl(textBox, ValidatorType.NumericWithDecimal);
             }
 
             // Метод для проверки, что поле не пустое
@@ -167,7 +164,7 @@ namespace Kursivoy_Konkin
                 if (control == null) throw new ArgumentNullException(nameof(control));
 
                 // Регистрация контролла для проверки некорректности (пустое)
-                RegisterControl(control, ValidatorType.NotEmpty, 0);
+                RegisterControl(control, ValidatorType.NotEmpty);
             }
 
             // Валидация номера телефона с проверками начала и длины
@@ -234,8 +231,53 @@ namespace Kursivoy_Konkin
                 };
             }
 
+            // Метод для применения фильтрации русских букв, цифр и запятой
+            /// <summary>
+            /// Русские буквы (А-Я, а-я, Ё, ё), цифры (0-9), запятая и пробел.
+            /// </summary>
+            public static void ApplyRussianWithDigitsAndComma(TextBox textBox)
+            {
+                if (textBox == null) throw new ArgumentNullException(nameof(textBox));
+
+                bool internalChange = false; // Для избегания рекурсии
+
+                // Обработчик нажатий, разрешает только русские буквы, цифры, запятую и пробел
+                textBox.KeyPress += (sender, e) =>
+                {
+                    if (char.IsControl(e.KeyChar)) return; // Разрешаем управляющие символы
+
+                    string ch = e.KeyChar.ToString();
+                    // Разрешены только русские буквы, цифры, запятая и пробел
+                    if (!Regex.IsMatch(ch, "^[А-ЯЁа-яё0-9, ]$"))
+                    {
+                        e.Handled = true; // Блокируем некорректный ввод
+                    }
+                };
+
+                // Обработчик для фильтрации текста
+                textBox.TextChanged += (sender, e) =>
+                {
+                    if (internalChange) return;
+                    internalChange = true;
+
+                    int selStart = textBox.SelectionStart;
+                    string cleaned = FilterRussianWithDigitsAndComma(textBox.Text);
+
+                    if (cleaned != textBox.Text)
+                    {
+                        textBox.Text = cleaned;
+                        textBox.SelectionStart = Math.Min(selStart, textBox.Text.Length);
+                    }
+
+                    internalChange = false;
+                };
+
+                // Регистрация
+                RegisterControl(textBox, ValidatorType.RussianWithDigitsAndComma);
+            }
+
             // Метод регистрации контролов в системе валидаторов
-            private static void RegisterControl(Control control, ValidatorType type, int maxLength)
+            private static void RegisterControl(Control control, ValidatorType type)
             {
                 if (!_registered.ContainsKey(control))
                 {
@@ -243,14 +285,14 @@ namespace Kursivoy_Konkin
                     {
                         Type = type,
                         OriginalBackColor = control.BackColor,
-                        MaxLength = maxLength
+                        
                     });
                 }
                 else
                 {
                     // Обновляем информацию для уже зарегистрированного контрола
                     _registered[control].Type = type;
-                    _registered[control].MaxLength = maxLength;
+                    
                 }
             }
 
@@ -283,6 +325,10 @@ namespace Kursivoy_Konkin
                     else if (info.Type == ValidatorType.NumericWithDecimal && !Regex.IsMatch(text, "^[0-9]+([.,][0-9]+)?$"))
                     {
                         isValid = false; // Не соответствует числовому формату
+                    }
+                    else if (info.Type == ValidatorType.RussianWithDigitsAndComma && !Regex.IsMatch(text, "^[А-ЯЁа-яё0-9, ]+$"))
+                    {
+                        isValid = false; // Если содержит недопустимые символы
                     }
 
                     // Специальная проверка для MaskedTextBox, если есть
@@ -326,6 +372,13 @@ namespace Kursivoy_Konkin
                 if (string.IsNullOrEmpty(input)) return string.Empty;
                 // Оставляем только русские буквы и пробелы
                 return Regex.Replace(input, "[^А-Яа-яЁё ]+", "");
+            }
+
+            private static string FilterRussianWithDigitsAndComma(string input)
+            {
+                if (string.IsNullOrEmpty(input)) return string.Empty;
+                // Оставляем только русские буквы, цифры, запятую и пробел
+                return Regex.Replace(input, "[^А-Яа-яЁё0-9, ]+", "");
             }
 
             private static string FilterNumericWithDecimal(string input)

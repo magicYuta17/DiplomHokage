@@ -516,7 +516,7 @@ namespace Kursivoy_Konkin
                 if (isMasked)
                 {
                     display.Rows.Add(
-                        MaskFio(fio),
+                        fio,
                         MaskPhone(phone),
                         "**.**.**** ",
                         age,

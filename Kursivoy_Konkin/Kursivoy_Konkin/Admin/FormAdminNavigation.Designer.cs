@@ -39,10 +39,10 @@ namespace Kursivoy_Konkin
             // 
             this.button5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(204)))), ((int)(((byte)(153)))));
             this.button5.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
-            this.button5.Location = new System.Drawing.Point(55, 371);
+            this.button5.Location = new System.Drawing.Point(55, 403);
             this.button5.Margin = new System.Windows.Forms.Padding(4);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(838, 85);
+            this.button5.Size = new System.Drawing.Size(521, 85);
             this.button5.TabIndex = 25;
             this.button5.Text = "Назад";
             this.button5.UseVisualStyleBackColor = false;
@@ -55,9 +55,9 @@ namespace Kursivoy_Konkin
             this.button1.Location = new System.Drawing.Point(55, 55);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(838, 124);
+            this.button1.Size = new System.Drawing.Size(521, 124);
             this.button1.TabIndex = 21;
-            this.button1.Text = "Просмотр, добавление, удаление и редактирование сотрудников";
+            this.button1.Text = "Список сотрудников";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -68,9 +68,9 @@ namespace Kursivoy_Konkin
             this.buttonViewObject.Location = new System.Drawing.Point(55, 187);
             this.buttonViewObject.Margin = new System.Windows.Forms.Padding(4);
             this.buttonViewObject.Name = "buttonViewObject";
-            this.buttonViewObject.Size = new System.Drawing.Size(838, 124);
+            this.buttonViewObject.Size = new System.Drawing.Size(521, 124);
             this.buttonViewObject.TabIndex = 26;
-            this.buttonViewObject.Text = "Просмотр, добавление, удаление и редактирование объектов";
+            this.buttonViewObject.Text = "Список объектов";
             this.buttonViewObject.UseVisualStyleBackColor = false;
             this.buttonViewObject.Click += new System.EventHandler(this.buttonViewObject_Click);
             // 
@@ -79,12 +79,14 @@ namespace Kursivoy_Konkin
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(922, 534);
+            this.ClientSize = new System.Drawing.Size(647, 584);
             this.Controls.Add(this.buttonViewObject);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FormAdminNavigation";
             this.Text = "Навигация - Админ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormAdmin_FormClosing);

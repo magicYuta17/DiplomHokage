@@ -24,6 +24,49 @@ namespace Kursivoy_Konkin
             this.ControlBox = false;  // Отключение всего системного блока
         }
 
+        // Метод для вычисления столбца "prepay" на основе cost и procent_prepay
+        private void CalculatePrepayColumn(DataTable table)
+        {
+            try
+            {
+                // Проверяем наличие необходимых колонок в таблице
+                if (!table.Columns.Contains("cost") || !table.Columns.Contains("procent_prepay") || !table.Columns.Contains("prepay"))
+                    return;
+
+                // Проходим по каждой строке таблицы и вычисляем prepay
+                foreach (DataRow row in table.Rows)
+                {
+                    object costObj = row["cost"];
+                    object procentObj = row["procent_prepay"];
+
+                    // Проверяем, что значения не null и не DBNull
+                    if (costObj != null && costObj != DBNull.Value && 
+                        procentObj != null && procentObj != DBNull.Value)
+                    {
+                        try
+                        {
+                            decimal cost = Convert.ToDecimal(costObj);
+                            decimal procent = Convert.ToDecimal(procentObj);
+
+                            // Вычисляем prepay: cost * (procent / 100)
+                            decimal prepay = cost * (procent / 100);
+
+                            // Устанавливаем вычисленное значение в столбец prepay
+                            row["prepay"] = prepay;
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Ошибка при вычислении prepay: {ex.Message}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка в методе CalculatePrepayColumn: {ex.Message}");
+            }
+        }
+
         // Метод загрузки и отображения данных
         private void LoadData()
         {
@@ -37,9 +80,14 @@ namespace Kursivoy_Konkin
                 string query = @"
             SELECT 
                 ID_object,
+                procent_prepay,
+                name_object AS 'Наименование объекта',
                 square AS 'Площадь',
                 cost AS 'Стоимость',
-                building_dates AS 'Дата постройки',
+                prepay AS 'Обязательная предоплата',
+                building_dates_plan AS 'Срок строительства (план)',
+                building_dates_fact AS 'Срок строительства (фактический)',
+                
                 number_floors AS 'Количество комнат',
                 parking_space AS 'Площадь парковки',
                 photo
@@ -68,6 +116,15 @@ namespace Kursivoy_Konkin
                     // Скрываем колонку с ID объекта (чтобы пользователь её не видел)
                     if (dataGridView1.Columns["ID_object"] != null)
                         dataGridView1.Columns["ID_object"].Visible = false;
+
+                    if (dataGridView1.Columns["procent_prepay"] != null)
+                        dataGridView1.Columns["procent_prepay"].Visible = false;
+
+                    // Автоподбор ширины столбца "Наименование объекта"
+                    if (dataGridView1.Columns["Наименование объекта"] != null)
+                    {
+                        dataGridView1.Columns["Наименование объекта"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                    }
 
                     // Скрываем колонку "photo" — сырые данные (имена файлов)
                     if (dataGridView1.Columns["photo"] != null)
@@ -165,9 +222,7 @@ namespace Kursivoy_Konkin
                 case "FormManagerNavigation":
                     previousForm = new FormManagerNavigation(); // новая форма навигации
                     break;
-                case "FormHeadNavigation":
-                    previousForm = new FormHeadNavigation(); // другая форма навигации
-                    break;
+               
             }
 
             // Если форма определена, возвращаемся назад

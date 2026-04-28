@@ -66,11 +66,10 @@ namespace Kursivoy_Konkin.Manager
                         w.ID_worker AS 'ID Работника',
                         w.FIO AS 'ФИО Работника',
                         w.phone AS 'Телефон работника',
-                        c.connection_contract_object_idconnection_contract_object,
                         c.END_DATE AS 'Дата окончание договора о строительстве'         
                     FROM contract c
-                    LEFT JOIN object o ON o.connection_contract_object_idconnection_contract_object = c.connection_contract_object_idconnection_contract_object
                     LEFT JOIN clients cl ON cl.ID_Client = c.Clients_ID_Client
+                    LEFT JOIN object o ON c.object_ID_object = o.ID_object
                     LEFT JOIN worker w ON w.ID_worker = c.worker_ID_worker;";
 
                 // Создаем соединение, команду и адаптер для выполнения запроса
@@ -99,8 +98,7 @@ namespace Kursivoy_Konkin.Manager
                         dataGridView1.Columns["ID Клиента"].Visible = false;
                     if (dataGridView1.Columns["ID Работника"] != null)
                         dataGridView1.Columns["ID Работника"].Visible = false;
-                    if (dataGridView1.Columns["connection_contract_object_idconnection_contract_object"] != null)
-                        dataGridView1.Columns["connection_contract_object_idconnection_contract_object"].Visible = false;
+
 
                     // Отключение сортировки для всех колонок
                     foreach (DataGridViewColumn col in dataGridView1.Columns)

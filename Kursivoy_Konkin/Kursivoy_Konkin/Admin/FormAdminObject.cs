@@ -39,15 +39,19 @@ namespace Kursivoy_Konkin
                 string query = @"
             SELECT 
                 ID_object,
-                name_object AS `Наименование объекта`,
+                name_object AS 'Наименование объекта',
                 square AS 'Площадь',
                 cost AS 'Стоимость',
-                building_dates AS 'Дата постройки',
+                prepay AS 'Обязательная предоплата',
+                procent_prepay AS '% Предоплаты',
+                building_dates_plan AS 'Срок строительства (план)',
+                building_dates_fact AS 'Срок строительства (фактический)',
+                
                 number_floors AS 'Количество комнат',
                 parking_space AS 'Площадь парковки',
                 photo
             FROM object
-            WHERE IsDeleted = 0;"; // Только активные объекты
+            WHERE IsDeleted = 0";
 
                 using (var connection = new MySqlConnection(connect.con))
                 using (var command = new MySqlCommand(query, connection))
@@ -69,6 +73,14 @@ namespace Kursivoy_Konkin
                     // Скрываем столбец ID_object (служебная информация)
                     if (dataGridView1.Columns["ID_object"] != null)
                         dataGridView1.Columns["ID_object"].Visible = false;
+
+                    // Автоподбор ширины столбца "Наименование объекта"
+                    if (dataGridView1.Columns["Наименование объекта"] != null)
+                    {
+                        dataGridView1.Columns["Наименование объекта"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                    }
+
+
 
                     // Скрываем колонку photo (сырые данные из БД, будем показывать изображения отдельно)
                     if (dataGridView1.Columns["photo"] != null)
