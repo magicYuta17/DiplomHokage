@@ -59,6 +59,7 @@ namespace Kursivoy_Konkin.Manager
                         c.date_signing AS 'Дата подписи',
                         o.building_dates_plan AS 'Срок строительства (план)',
                         o.prepay AS 'Обязятельная предоплата',
+                        s.status_contract_name AS   'Статус контракта',
                         -- Данные клиента
                         cl.ID_Client AS 'ID Клиента',
                         cl.FullName_client AS 'ФИО Клиента',
@@ -70,6 +71,7 @@ namespace Kursivoy_Konkin.Manager
                         c.END_DATE AS 'Дата окончание договора о строительстве'         
                     FROM contract c
                     LEFT JOIN clients cl ON cl.ID_Client = c.Clients_ID_Client
+                    LEFT JOIN status_contract s ON s.status_contract_id = c.status_contract_id
                     LEFT JOIN object o ON c.object_ID_object = o.ID_object
                     LEFT JOIN worker w ON w.ID_worker = c.worker_ID_worker;";
 

@@ -139,80 +139,138 @@ namespace Kursivoy_Konkin
 
         private void MenuItemPrint_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.Rows.Count == 0)
-            {
-                MessageBox.Show("Нет данных для печати.", "Информация",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            string fileName = Path.Combine(baseDir, "docPrint", "printLTV.docx");
-            if (!File.Exists(fileName))
-            {
-                MessageBox.Show($"Шаблон не найден:\n{fileName}", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            var word = new Microsoft.Office.Interop.Word.Application();
-            word.Visible = false;
-
             try
             {
-                var wordDocument = word.Documents.Add(fileName);
-                ReplaceWordStub("{Дата}", DateTime.Now.ToString("dd.MM.yyyy"), wordDocument);
+                // Получаем лучших сотрудников по суммарному LTV
+                var topWorkers = GetTopWorkersByLTV();
 
-                var excludedColumns = new[] { "Телефон", "Дата рождения" };
-                var visibleColumns = dataGridView1.Columns
-                    .Cast<DataGridViewColumn>()
-                    .Where(c => c.Visible && !excludedColumns.Contains(c.HeaderText))
-                    .ToList();
-
-                int rowCount = dataGridView1.Rows.Count;
-                int colCount = visibleColumns.Count;
-
-                var range = wordDocument.Content;
-                range.Collapse(Microsoft.Office.Interop.Word.WdCollapseDirection.wdCollapseEnd);
-                range.InsertParagraphAfter();
-                range.Collapse(Microsoft.Office.Interop.Word.WdCollapseDirection.wdCollapseEnd);
-
-                var wordTable = wordDocument.Tables.Add(range, rowCount + 1, colCount);
-                wordTable.Borders.Enable = 1;
-
-                object tableStyle = "Сетка таблицы";
-                try { wordTable.set_Style(ref tableStyle); } catch { }
-
-                for (int col = 0; col < colCount; col++)
+                if (topWorkers.Count == 0)
                 {
-                    var cell = wordTable.Cell(1, col + 1);
-                    cell.Range.Text = visibleColumns[col].HeaderText;
-                    cell.Range.Bold = 1;
-                    cell.Range.ParagraphFormat.Alignment =
-                        Microsoft.Office.Interop.Word.WdParagraphAlignment.wdAlignParagraphCenter;
+                    MessageBox.Show("Нет данных для печати.", "Информация",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
                 }
 
-                for (int row = 0; row < rowCount; row++)
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                string fileName = Path.Combine(baseDir, "docPrint", "printLTV.docx");
+                if (!File.Exists(fileName))
+                {
+                    MessageBox.Show($"Шаблон не найден:\n{fileName}", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                var word = new Microsoft.Office.Interop.Word.Application();
+                word.Visible = false;
+
+                try
+                {
+                    var wordDocument = word.Documents.Open(
+                        FileName: fileName,
+                        ConfirmConversions: false,
+                        ReadOnly: false,
+                        AddToRecentFiles: false
+                    );
+
+                    // Заменяем дату и заголовок
+                    ReplaceWordStub("{Дата}", DateTime.Now.ToString("dd.MM.yyyy"), wordDocument);
+                    ReplaceWordStub("{Заголовок}", "Отчет: Топ-50 лучших сотрудников компании по LTV", wordDocument);
+
+                    // Создаем таблицу с данными сотрудников
+                    var range = wordDocument.Content;
+                    range.Collapse(Microsoft.Office.Interop.Word.WdCollapseDirection.wdCollapseEnd);
+                    range.InsertParagraphAfter();
+                    range.Collapse(Microsoft.Office.Interop.Word.WdCollapseDirection.wdCollapseEnd);
+
+                    int rowCount = topWorkers.Count;
+                    int colCount = 3; // ФИО, Количество клиентов, Суммарный LTV
+
+                    var wordTable = wordDocument.Tables.Add(range, rowCount + 1, colCount);
+                    wordTable.Borders.Enable = 1;
+
+                    // Устанавливаем стиль таблицы
+                    object tableStyle = "Сетка таблицы";
+                    try { wordTable.set_Style(ref tableStyle); } catch { }
+
+                    // Заголовки таблицы
+                    string[] headers = { "ФИО сотрудника", "Количество клиентов", "Суммарный LTV" };
                     for (int col = 0; col < colCount; col++)
                     {
-                        var cellValue = dataGridView1.Rows[row].Cells[visibleColumns[col].Index].Value;
-                        string text = cellValue != null && cellValue != DBNull.Value
-                            ? cellValue.ToString() : "";
-                        wordTable.Cell(row + 2, col + 1).Range.Text = text;
+                        var cell = wordTable.Cell(1, col + 1);
+                        cell.Range.Text = headers[col];
+                        cell.Range.Bold = 1;
+                        cell.Range.ParagraphFormat.Alignment =
+                            Microsoft.Office.Interop.Word.WdParagraphAlignment.wdAlignParagraphCenter;
                     }
 
-                foreach (Microsoft.Office.Interop.Word.Row wordRow in wordTable.Rows)
-                    foreach (Microsoft.Office.Interop.Word.Cell cell in wordRow.Cells)
-                        cell.Range.Font.Size = 9;
+                    // Заполняем таблицу данными
+                    for (int row = 0; row < rowCount; row++)
+                    {
+                        var worker = topWorkers[row];
+                        wordTable.Cell(row + 2, 1).Range.Text = worker["FIO"].ToString();
+                        wordTable.Cell(row + 2, 2).Range.Text = worker["ClientCount"].ToString();
+                        wordTable.Cell(row + 2, 3).Range.Text = Convert.ToDecimal(worker["TotalLTV"]).ToString("N2");
+                    }
 
-                word.Visible = true;
+                    // Форматирование ячеек таблицы
+                    foreach (Microsoft.Office.Interop.Word.Row wordRow in wordTable.Rows)
+                        foreach (Microsoft.Office.Interop.Word.Cell cell in wordRow.Cells)
+                            cell.Range.Font.Size = 10;
+
+                    word.Visible = true;
+                }
+                catch (Exception ex)
+                {
+                    word.Quit();
+                    MessageBox.Show($"Ошибка при формировании отчёта: {ex.Message}", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             catch (Exception ex)
             {
-                word.Quit();
-                MessageBox.Show($"Ошибка при формировании отчёта: {ex.Message}", "Ошибка",
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        // Метод для получения лучших сотрудников по суммарному LTV клиентов
+        private List<DataRow> GetTopWorkersByLTV()
+        {
+            var result = new List<DataRow>();
+
+            try
+            {
+                string query = @"
+                    SELECT 
+                        w.FIO,
+                        COUNT(DISTINCT c.ID_Client) AS ClientCount,
+                        COALESCE(SUM(c.LTV), 0) AS TotalLTV
+                    FROM mydb.worker w
+                    LEFT JOIN mydb.clients c ON w.ID_Clientsl = c.ID_Client
+                    WHERE w.IsDeleted = 0 AND c.IsDeleted = 0
+                    GROUP BY w.ID_worker, w.FIO
+                    ORDER BY TotalLTV DESC
+                    LIMIT 50;";
+
+                using (var connection = new MySqlConnection(connect.con))
+                using (var command = new MySqlCommand(query, connection))
+                using (var adapter = new MySqlDataAdapter(command))
+                {
+                    DataTable table = new DataTable();
+                    connection.Open();
+                    adapter.Fill(table);
+
+                    foreach (DataRow row in table.Rows)
+                        result.Add(row);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке данных сотрудников: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return result;
         }
 
         private void ReplaceWordStub(string stub, string text,

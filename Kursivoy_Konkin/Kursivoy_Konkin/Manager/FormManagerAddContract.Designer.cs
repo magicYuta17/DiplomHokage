@@ -53,6 +53,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.btnAddContract = new System.Windows.Forms.Button();
             this.txtContractName = new System.Windows.Forms.TextBox();
+            this.comboBoxStatusContract = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvClients)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvWorkers)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvObjects)).BeginInit();
@@ -62,7 +64,7 @@
             // 
             this.btnCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(204)))), ((int)(((byte)(153)))));
             this.btnCancel.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
-            this.btnCancel.Location = new System.Drawing.Point(1028, 782);
+            this.btnCancel.Location = new System.Drawing.Point(1028, 914);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(424, 64);
@@ -272,7 +274,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
-            this.label3.Location = new System.Drawing.Point(1020, 309);
+            this.label3.Location = new System.Drawing.Point(1020, 441);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(349, 47);
@@ -283,7 +285,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
-            this.label5.Location = new System.Drawing.Point(1020, 426);
+            this.label5.Location = new System.Drawing.Point(1020, 558);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(314, 47);
@@ -293,7 +295,7 @@
             // dtpDateSigning
             // 
             this.dtpDateSigning.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
-            this.dtpDateSigning.Location = new System.Drawing.Point(1028, 476);
+            this.dtpDateSigning.Location = new System.Drawing.Point(1028, 608);
             this.dtpDateSigning.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dtpDateSigning.Name = "dtpDateSigning";
             this.dtpDateSigning.Size = new System.Drawing.Size(356, 55);
@@ -302,7 +304,7 @@
             // dtpEndDate
             // 
             this.dtpEndDate.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
-            this.dtpEndDate.Location = new System.Drawing.Point(1028, 586);
+            this.dtpEndDate.Location = new System.Drawing.Point(1028, 718);
             this.dtpEndDate.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dtpEndDate.Name = "dtpEndDate";
             this.dtpEndDate.Size = new System.Drawing.Size(356, 55);
@@ -312,7 +314,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
-            this.label6.Location = new System.Drawing.Point(1020, 537);
+            this.label6.Location = new System.Drawing.Point(1020, 669);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(285, 47);
@@ -323,7 +325,7 @@
             // 
             this.btnAddContract.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(204)))), ((int)(((byte)(153)))));
             this.btnAddContract.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
-            this.btnAddContract.Location = new System.Drawing.Point(1028, 688);
+            this.btnAddContract.Location = new System.Drawing.Point(1028, 820);
             this.btnAddContract.Margin = new System.Windows.Forms.Padding(4);
             this.btnAddContract.Name = "btnAddContract";
             this.btnAddContract.Size = new System.Drawing.Size(424, 64);
@@ -334,12 +336,33 @@
             // txtContractName
             // 
             this.txtContractName.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
-            this.txtContractName.Location = new System.Drawing.Point(1028, 367);
+            this.txtContractName.Location = new System.Drawing.Point(1028, 499);
             this.txtContractName.Margin = new System.Windows.Forms.Padding(4);
             this.txtContractName.MaxLength = 100;
             this.txtContractName.Name = "txtContractName";
             this.txtContractName.Size = new System.Drawing.Size(692, 55);
             this.txtContractName.TabIndex = 56;
+            // 
+            // comboBoxStatusContract
+            // 
+            this.comboBoxStatusContract.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxStatusContract.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
+            this.comboBoxStatusContract.FormattingEnabled = true;
+            this.comboBoxStatusContract.Location = new System.Drawing.Point(1028, 369);
+            this.comboBoxStatusContract.Name = "comboBoxStatusContract";
+            this.comboBoxStatusContract.Size = new System.Drawing.Size(537, 55);
+            this.comboBoxStatusContract.TabIndex = 57;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
+            this.label7.Location = new System.Drawing.Point(1021, 304);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(301, 47);
+            this.label7.TabIndex = 58;
+            this.label7.Text = "Статус контракта:";
             // 
             // FormManagerAddContract
             // 
@@ -347,6 +370,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1924, 1055);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.comboBoxStatusContract);
             this.Controls.Add(this.txtContractName);
             this.Controls.Add(this.btnAddContract);
             this.Controls.Add(this.dtpEndDate);
@@ -410,5 +435,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnAddContract;
         private System.Windows.Forms.TextBox txtContractName;
+        private System.Windows.Forms.ComboBox comboBoxStatusContract;
+        private System.Windows.Forms.Label label7;
     }
 }

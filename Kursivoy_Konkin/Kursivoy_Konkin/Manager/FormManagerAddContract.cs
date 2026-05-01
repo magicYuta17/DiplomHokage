@@ -19,6 +19,7 @@ namespace YourNamespace
         private int? selectedClientId = null;
         private int? selectedWorkerId = null;
         private int? selectedObjectId = null;
+        private int? selectedStatusId = null;
 
         // Конструктор формы. Вызывается при создании нового экземпляра
         public FormManagerAddContract()
@@ -60,6 +61,7 @@ namespace YourNamespace
             LoadClients();
             LoadWorkers();
             LoadObjects();
+            LoadStatusContracts(); // Загрузка статусов контрактов в comboBox
 
             // Подписка на события поиска: при изменении текста в поисковой строке вызывается метод загрузки с фильтром
             txtSearchClient.TextChanged += (s, e) => LoadClients(txtSearchClient.Text);
@@ -196,7 +198,7 @@ namespace YourNamespace
                                 number_floors       AS 'Кол-во комнат',
                                 parking_space       AS 'Парковка (м²)',
                                 cost                AS 'Стоимость (руб.)',
-                                building_dates      AS 'Срок строительства (дней)'
+                                building_dates_plan AS 'Срок строительства (дней)'
                             FROM object
                             WHERE IsDeleted = 0
                             AND (name_object LIKE @search 
@@ -217,6 +219,45 @@ namespace YourNamespace
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка загрузки объектов: {ex.Message}",
+                    "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Загрузка статусов контрактов в comboBox
+        private void LoadStatusContracts()
+        {
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                    // Запрос на выборку всех статусов контрактов
+                    string query = @"SELECT 
+                                        status_contract_id AS 'ID',
+                                        status_contract_name AS 'Name'
+                                    FROM status_contract
+                                    ORDER BY status_contract_name";
+
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    // Установка источника данных для comboBox
+                    comboBoxStatusContract.DataSource = dt;
+                    comboBoxStatusContract.DisplayMember = "Name"; // Показываем имя статуса
+                    comboBoxStatusContract.ValueMember = "ID"; // Значение - ID статуса
+
+                    // Выбираем первый элемент по умолчанию
+                    if (dt.Rows.Count > 0)
+                    {
+                        comboBoxStatusContract.SelectedIndex = 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки статусов контрактов: {ex.Message}",
                     "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -280,7 +321,7 @@ namespace YourNamespace
                 {
                     conn.Open();
                     // Запрос на получение срока строительства выбранного объекта
-                    string query = "SELECT building_dates FROM object WHERE ID_object = @id";
+                    string query = "SELECT building_dates_plan FROM object WHERE ID_object = @id";
                     MySqlCommand cmd = new MySqlCommand(query, conn);
                     cmd.Parameters.AddWithValue("@id", selectedObjectId); // Передаем ID объекта
 
@@ -386,10 +427,10 @@ namespace YourNamespace
                     string query = @"INSERT INTO contract 
                                     (Name_contract, date_signing, END_DATE, 
                                      Clients_ID_Client, worker_ID_worker, 
-                                     connection_contract_object_idconnection_contract_object)
+                                     object_ID_object, status_contract_id)
                                     VALUES 
                                     (@name, @dateSigning, @endDate, 
-                                     @clientId, @workerId, @objectId)";
+                                     @clientId, @workerId, @objectId, @statusId)";
 
                     MySqlCommand cmd = new MySqlCommand(query, conn);
                     // Добавляем параметры со значениями из полей формы
@@ -399,6 +440,7 @@ namespace YourNamespace
                     cmd.Parameters.AddWithValue("@clientId", selectedClientId); // ID клиента
                     cmd.Parameters.AddWithValue("@workerId", selectedWorkerId); // ID сотрудника
                     cmd.Parameters.AddWithValue("@objectId", selectedObjectId); // ID объекта
+                    cmd.Parameters.AddWithValue("@statusId", Convert.ToInt32(comboBoxStatusContract.SelectedValue)); // ID статуса
 
                     cmd.ExecuteNonQuery(); // Выполняем запрос на вставку
 
@@ -408,6 +450,11 @@ namespace YourNamespace
 
                     this.Close(); // Закрываем текущую форму
                 }
+            }
+            catch (MySqlException ex) when (ex.Message.Contains("Duplicate"))
+            {
+                MessageBox.Show("Ошибка: Объект уже привязан к другому контракту.\n\nВыберите другой объект недвижимости.",
+                    "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
