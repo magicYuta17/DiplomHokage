@@ -14,6 +14,7 @@ namespace Kursivoy_Konkin
         private static Timer _timer;
         private static int _timeoutMs;
         private static Action _onLockAction;
+        private static bool _isPaused = false;
 
         /// <summary>
         /// Запустить мониторинг.
@@ -35,6 +36,7 @@ namespace Kursivoy_Konkin
             _timer.Interval = _timeoutMs;
             _timer.Tick += OnTimerTick;
             _timer.Start();
+            _isPaused = false;
         }
 
         /// <summary>
@@ -42,9 +44,33 @@ namespace Kursivoy_Konkin
         /// </summary>
         public static void ResetTimer()
         {
-            if (_timer == null) return;
+            if (_timer == null || _isPaused) return;
             _timer.Stop();
             _timer.Start();
+        }
+
+        /// <summary>
+        /// Паузировать мониторинг (например, когда форма авторизации открыта).
+        /// </summary>
+        public static void Pause()
+        {
+            if (_timer != null)
+            {
+                _timer.Stop();
+                _isPaused = true;
+            }
+        }
+
+        /// <summary>
+        /// Возобновить мониторинг.
+        /// </summary>
+        public static void Resume()
+        {
+            if (_timer != null)
+            {
+                _isPaused = false;
+                _timer.Start();
+            }
         }
 
         /// <summary>

@@ -25,8 +25,14 @@ namespace Kursivoy_Konkin
         /// </summary>
         private static void OnInactivityLock()
         {
-            // Останавливаем таймер на время блокировки
-            ActivityMonitor.Stop();
+            // Паузируем мониторинг во время показа формы авторизации
+            ActivityMonitor.Pause();
+
+            // Показываем сообщение о блокировке
+            MessageBox.Show("Приложение заблокировано из-за бездействия. Пожалуйста, авторизуйтесь заново.", 
+                "Блокировка приложения", 
+                MessageBoxButtons.OK, 
+                MessageBoxIcon.Information);
 
             // Скрываем все открытые формы кроме FormAutorization
             foreach (Form form in Application.OpenForms)
@@ -43,8 +49,8 @@ namespace Kursivoy_Konkin
                 var loginForm = new FormAutorization();
                 loginForm.ShowDialog();
 
-                // После входа снова запускаем мониторинг
-                ActivityMonitor.Start(OnInactivityLock);
+                // После входа возобновляем мониторинг
+                ActivityMonitor.Resume();
             }));
         }
     }

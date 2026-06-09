@@ -330,7 +330,7 @@ namespace Kursivoy_Konkin
                 try
                 {
 
-                    Environment.Exit(0);
+                    Environment.Exit(0);           
                 }
                 catch (Exception ex)
                 {
