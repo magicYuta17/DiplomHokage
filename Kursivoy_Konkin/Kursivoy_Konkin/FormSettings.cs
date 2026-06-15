@@ -40,10 +40,7 @@ namespace Kursivoy_Konkin
 
             MessageBox.Show("Соединение установлено!", "Сообщение пользователю", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            FormAdminLocalNavigation authorizationForm = new FormAdminLocalNavigation();
-            this.Visible = false;
-            authorizationForm.ShowDialog();
-            this.Close();
+          
 
             int minutes = (int)numericTimeout.Value;
 
@@ -60,6 +57,11 @@ namespace Kursivoy_Konkin
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             lblCurrentTimeout.Text = $"{minutes} мин.";
+
+            FormAdminLocalNavigation authorizationForm = new FormAdminLocalNavigation();
+            this.Visible = false;
+            authorizationForm.ShowDialog();
+            this.Close();
         }
 
         private void FormSettings_Load(object sender, EventArgs e)
