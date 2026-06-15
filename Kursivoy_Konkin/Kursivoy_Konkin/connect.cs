@@ -10,12 +10,12 @@ namespace Kursivoy_Konkin
     internal class connect
     {
         // Статическая строка соединения, собирается из настроек проекта
-        public static string con = $"host={Properties.Settings.Default.host};" +
-                                   $"uid={Properties.Settings.Default.uid};" +
-                                   $"pwd={Properties.Settings.Default.pwd};" +
-                                   $"database={Properties.Settings.Default.database}";
+        public static string con = $@"host={Properties.Settings.Default["host"]};
+                                      uid={Properties.Settings.Default["uid"]};
+                                      pwd={Properties.Settings.Default["pwd"]};
+                                      database={Properties.Settings.Default["database"]};";
         // Эта строка подключается к базе по параметрам, заданным в настройках проекта
 
-        public static string conNoDb = "server=localhost;user=root;password=root;port=3306;";
+        public static string conNoDb = "host=localhost;user=root;password=root;port=3306;";
     }
 }
