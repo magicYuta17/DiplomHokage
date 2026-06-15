@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kursivoy_Konkin.Admin;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -16,7 +17,7 @@ namespace Kursivoy_Konkin
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FormAutorization f = new FormAutorization();
+            FormAdminLocalNavigation f = new FormAdminLocalNavigation();
             this.Visible = false;
             f.ShowDialog();
             this.Close();

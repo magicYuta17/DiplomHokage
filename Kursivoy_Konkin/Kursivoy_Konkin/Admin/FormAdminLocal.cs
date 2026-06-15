@@ -102,11 +102,11 @@ namespace Kursivoy_Konkin.Admin
                 switch (tableName)
                 {
                     case "clients":
-                        query = $@"INSERT INTO clients (FullName_client, phone, Age, Status_client_ID_Status_client, LTV, Birthday, IsDeleted) 
+                        query = $@"INSERT INTO clients (ID_Client, FullName_client, phone, Age, Status_client_ID_Status_client, LTV, Birthday, IsDeleted) 
                     VALUES ('{values[0]}', '{values[1]}', '{values[2]}', '{values[3]}', 
                             {(string.IsNullOrEmpty(values[4]) ? "NULL" : $"'{values[4]}'")} , 
                             {(string.IsNullOrEmpty(values[5]) ? "NULL" : $"'{values[5]}'")} , 
-                            '{values[6]}')";
+                            {ConvertDate(values[6])}, '{values[7]}' )";
                         break;
 
                     case "contract":
@@ -116,7 +116,7 @@ namespace Kursivoy_Konkin.Admin
 
                     case "object":
                         query = $@"INSERT INTO object (name_object, square, cost, building_dates, number_floors, parking_space, connection_contract_object_ID_object, photo, IsDeleted) 
-                    VALUES ('{values[0]}', '{values[1]}', '{values[2]}', '{values[3]}', '{values[4]}', '{values[5]}', 
+                    VALUES ('{values[0]}', '{values[1]}', '{values[2]}', {ConvertDate(values[3])}, '{values[4]}', '{values[5]}', 
                             {(string.IsNullOrEmpty(values[6]) ? "NULL" : $"'{values[6]}'")} , 
                             {(string.IsNullOrEmpty(values[7]) ? "NULL" : $"'{values[7]}'")} , 
                             '{values[8]}')";
@@ -128,9 +128,10 @@ namespace Kursivoy_Konkin.Admin
                         break;
 
                     case "status_client":
-                        query = $@"INSERT INTO status_client (status, IsDeleted) 
-                    VALUES ({(string.IsNullOrEmpty(values[0]) ? "NULL" : $"'{values[0]}'")} , '{values[1]}')";
+                        query = $@"INSERT INTO status_client (ID_Status_client, status, IsDeleted) 
+                    VALUES ('{values[0]}', '{values[1]}', '{values[2]}')";
                         break;
+
 
                     case "worker":
                         query = $@"INSERT INTO worker (ID_Clientsl, FIO, Age, phone, Role_worker_ID_Role, IsDeleted, photo, password) 
@@ -334,7 +335,18 @@ namespace Kursivoy_Konkin.Admin
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private string ConvertDate(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return "NULL";
 
+            // Пробуем распарсить дату в любом формате
+            if (DateTime.TryParse(value, out DateTime dt))
+            {
+                return $"'{dt:yyyy-MM-dd}'"; // MySQL формат
+            }
+
+            return $"'{value}'"; // fallback — оставляем как есть
+        }
         private void button2_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult = MessageBox.Show("Вы действительно хотите выйти?", "Предупреждение", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -345,6 +357,14 @@ namespace Kursivoy_Konkin.Admin
                 authorizationForm.ShowDialog();
                 this.Close();
             }
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            FormAdminLocalNavigation f = new FormAdminLocalNavigation();
+            this.Visible = false;
+            f.ShowDialog();
+            this.Close();
         }
     }
 

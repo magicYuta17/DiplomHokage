@@ -119,6 +119,12 @@
     <Compile Include="Admin\FormAdminLocal.Designer.cs">
       <DependentUpon>FormAdminLocal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Admin\FormAdminLocalNavigation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Admin\FormAdminLocalNavigation.Designer.cs">
+      <DependentUpon>FormAdminLocalNavigation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Admin\FormAdminWorkerAdd.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -130,6 +136,12 @@
     </Compile>
     <Compile Include="Admin\FormAdminWorkerEdit.Designer.cs">
       <DependentUpon>FormAdminWorkerEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\FormRepairBD.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Admin\FormRepairBD.Designer.cs">
+      <DependentUpon>FormRepairBD.cs</DependentUpon>
     </Compile>
     <Compile Include="Data.cs" />
     <Compile Include="connect.cs" />
@@ -259,6 +271,9 @@
     <EmbeddedResource Include="Admin\FormAdminLocal.resx">
       <DependentUpon>FormAdminLocal.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Admin\FormAdminLocalNavigation.resx">
+      <DependentUpon>FormAdminLocalNavigation.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Admin\FormAdminNavigation.resx">
       <DependentUpon>FormAdminNavigation.cs</DependentUpon>
     </EmbeddedResource>
@@ -273,6 +288,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Admin\FormAdminWorkerEdit.resx">
       <DependentUpon>FormAdminWorkerEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Admin\FormRepairBD.resx">
+      <DependentUpon>FormRepairBD.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormAutorization.resx">
       <DependentUpon>FormAutorization.cs</DependentUpon>

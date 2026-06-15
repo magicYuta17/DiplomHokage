@@ -39,7 +39,6 @@ namespace Kursivoy_Konkin
             this.buttonCheckCaptcha2 = new System.Windows.Forms.Button();
             this.textBoxCaptcha = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.captchaIMG = new System.Windows.Forms.PictureBox();
@@ -151,19 +150,6 @@ namespace Kursivoy_Konkin
             this.label3.TabIndex = 10;
             this.label3.Text = "Введите каптчу";
             // 
-            // button3
-            // 
-            this.button3.BackColor = System.Drawing.Color.White;
-            this.button3.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
-            this.button3.Image = global::Kursivoy_Konkin.Properties.Resources.setting;
-            this.button3.Location = new System.Drawing.Point(13, 472);
-            this.button3.Margin = new System.Windows.Forms.Padding(4);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(79, 61);
-            this.button3.TabIndex = 15;
-            this.button3.UseVisualStyleBackColor = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
             // pictureBox2
             // 
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
@@ -201,7 +187,6 @@ namespace Kursivoy_Konkin
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1537, 546);
-            this.Controls.Add(this.button3);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.buttonCheckCaptcha2);
@@ -245,7 +230,6 @@ namespace Kursivoy_Konkin
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.Button button3;
     }
 }
 

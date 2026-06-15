@@ -155,7 +155,7 @@ namespace Kursivoy_Konkin
 
                         break;
                     case "4":
-                        FormAdminLocal adminFormLocal = new FormAdminLocal();
+                        FormAdminLocalNavigation adminFormLocal = new FormAdminLocalNavigation();
                         this.Visible = false;
                         adminFormLocal.ShowDialog();
                         this.Close();
