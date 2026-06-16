@@ -102,9 +102,11 @@ namespace Kursivoy_Konkin
                             string photoPath = Path.Combine(photoDirectory, photoFileName.ToString());
                             if (File.Exists(photoPath)) // Если файл существует
                             {
-                                // Загружаем изображение (создаем копию, чтобы не блокировать файл)
-                                using (var img = Image.FromFile(photoPath))
-                                    row.Cells["Фото"].Value = new Bitmap(img);
+                                byte[] bytes = File.ReadAllBytes(photoPath);
+                                using (var ms = new MemoryStream(bytes))
+                                {
+                                    row.Cells["Фото"].Value = new Bitmap(ms);
+                                }
                             }
                             else
                             {

@@ -1,5 +1,4 @@
-﻿
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Data;
 using System.IO;
@@ -27,6 +26,16 @@ namespace Kursivoy_Konkin
             LoadRoles(); // Загрузка списка ролей
             LoadClients(); // Загрузка списка клиентов
             LoadWorkerData(); // загружаем данные ПОСЛЕ ролей и клиентов
+        }
+
+        // Загружает изображение из файла без блокировки файла на диске
+        private System.Drawing.Image LoadImageFree(string path)
+        {
+            byte[] bytes = File.ReadAllBytes(path); // Читаем файл и сразу закрываем дескриптор
+            using (var ms = new MemoryStream(bytes))
+            {
+                return System.Drawing.Image.FromStream(new MemoryStream(ms.ToArray()));
+            }
         }
 
         // Метод для настройки ограничений ввода в полях
@@ -176,7 +185,7 @@ namespace Kursivoy_Konkin
                                         "photo_worker", currentPhoto);
 
                                     if (File.Exists(photoPath))
-                                        pictureBox1.Image = new System.Drawing.Bitmap(photoPath);
+                                        pictureBox1.Image = LoadImageFree(photoPath); // ✅ Файл не блокируется
                                 }
 
                                 // Выделяем текущего клиента в dgvClients
@@ -235,7 +244,7 @@ namespace Kursivoy_Konkin
                          fileInfo.Extension.Equals(".png", StringComparison.OrdinalIgnoreCase)) &&
                         fileInfo.Length <= 2 * 1024 * 1024)
                     {
-                        pictureBox1.Image = new System.Drawing.Bitmap(openFileDialog.FileName); // Отображаем фото
+                        pictureBox1.Image = LoadImageFree(openFileDialog.FileName); // ✅ Файл не блокируется
                         fileName = fileInfo.Name; // Сохраняем имя файла
                         fullPath = openFileDialog.FileName; // Сохраняем полный путь
                     }
@@ -280,13 +289,6 @@ namespace Kursivoy_Konkin
                 return;
             }
 
-            //if (dgvClients.SelectedRows.Count == 0) // Проверка выбора клиента
-            //{
-            //    MessageBox.Show("Выберите клиента из списка.", "Ошибка",
-            //        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            //    return;
-            //}
-
             try
             {
                 int? clientId = null;
@@ -309,7 +311,7 @@ namespace Kursivoy_Konkin
 
                     // Генерируем уникальное имя для файла
                     string uniqueName = Guid.NewGuid().ToString() + Path.GetExtension(fullPath);
-                    File.Copy(fullPath, Path.Combine(photoDir, uniqueName), true); // Копируем файл
+                    File.Copy(fullPath, Path.Combine(photoDir, uniqueName), true); // ✅ Теперь файл не занят — копирование пройдёт
                     photoName = uniqueName; // Сохраняем новое имя
                 }
 
