@@ -137,7 +137,7 @@ namespace Kursivoy_Konkin.Admin
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormAdminLocal";
-            this.Text = "Локальный администратор";
+            this.Text = "Импорт и Экспорт";
             this.Load += new System.EventHandler(this.FormAdminLocal_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);

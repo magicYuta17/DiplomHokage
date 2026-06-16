@@ -291,6 +291,8 @@
             this.Controls.Add(this.txt_Square);
             this.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "FormAdminAddObject";
             this.Text = "Добавление объекта - Админ";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormAdminAddObject_FormClosing);

@@ -50,8 +50,8 @@ namespace Kursivoy_Konkin
                         c.ID_Contract,
                         c.Name_contract AS 'Наименование контракта',
                         o.cost AS 'Стоимость',
-                        c.date_signing AS 'Дата подписи',
-                        o.building_dates AS 'Сроки строительства',
+                        o.building_dates_plan AS 'Срок строительства (план)',
+                        o.building_dates_fact AS 'Срок строительства (фактический)',
                         -- Данные клиента
                         cl.ID_Client AS 'ID Клиента',
                         cl.FullName_client AS 'ФИО Клиента',
