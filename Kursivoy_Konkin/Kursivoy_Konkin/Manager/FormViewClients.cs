@@ -339,14 +339,26 @@ namespace Kursivoy_Konkin
 
         private void FormViewClients_Load(object sender, EventArgs e)
         {
-            isMasked = true; // данные скрыты по умолчанию
-            
+            isMasked = true;
 
             FillTableData();
             UpdateClientBirthdaysAndAges();
-            comboBox1.Items.AddRange(new[] { "ФИО", "Статус", "LTV" });
+
+            // Добавляем "Без сортировки" первым пунктом
+            comboBox1.Items.Clear();
+            comboBox1.Items.AddRange(new[] { "Без сортировки", "ФИО", "Статус", "LTV" });
+            comboBox1.SelectedIndex = 0; // По умолчанию без сортировки
+
+            // "Все" уже есть первым пунктом
+            comboBox2.Items.Clear();
             comboBox2.Items.AddRange(new[] { "Все", "Больше 500 000", "Меньше 1 000 000", "Больше 2 000 000" });
+            comboBox2.SelectedIndex = 0;
+
+            // Добавляем "Все" первым пунктом для статусов
+            comboBox3.Items.Clear();
+            comboBox3.Items.Add("Все");
             LoadStatusesToComboBox3();
+            comboBox3.SelectedIndex = 0;
         }
 
         private void LoadStatusesToComboBox3()
@@ -396,14 +408,14 @@ namespace Kursivoy_Konkin
                         row["Телефон"].ToString().ToLower().Contains(searchText));
                 }
 
-                // Фильтр по статусу
+                // Фильтр по статусу (пропускаем если выбрано "Все")
                 if (comboBox3.SelectedItem != null && comboBox3.SelectedItem.ToString() != "Все")
                 {
                     string selectedStatus = comboBox3.SelectedItem.ToString();
                     filteredData = filteredData.Where(row => row["Статус"].ToString() == selectedStatus);
                 }
 
-                // Фильтр по LTV
+                // Фильтр по LTV (пропускаем если выбрано "Все")
                 if (comboBox2.SelectedItem != null && comboBox2.SelectedItem.ToString() != "Все")
                 {
                     switch (comboBox2.SelectedItem.ToString())
@@ -420,8 +432,8 @@ namespace Kursivoy_Konkin
                     }
                 }
 
-                // Сортировка
-                if (comboBox1.SelectedItem != null)
+                // Сортировка (пропускаем если выбрано "Без сортировки")
+                if (comboBox1.SelectedItem != null && comboBox1.SelectedItem.ToString() != "Без сортировки")
                 {
                     switch (comboBox1.SelectedItem.ToString())
                     {
@@ -437,7 +449,7 @@ namespace Kursivoy_Konkin
                     }
                 }
 
-                // Пагинация
+                // Остальной код без изменений...
                 var filteredList = filteredData.ToList();
                 int totalFilteredRecords = filteredList.Count;
                 int totalPagesFiltered = (int)Math.Ceiling((double)totalFilteredRecords / pageSize);
@@ -459,20 +471,16 @@ namespace Kursivoy_Konkin
                         .Take(pageSize)
                         .ToList();
 
-                    // ✅ Строим отображаемую таблицу с учётом маски
                     dataGridView1.DataSource = BuildDisplayTable(pagedRows);
 
                     totalRecords = totalFilteredRecords;
                     totalPages = totalPagesFiltered;
 
-                    // Сохраняем ID клиента в Tag каждой строки грида
                     for (int i = 0; i < pagedRows.Count && i < dataGridView1.Rows.Count; i++)
                         dataGridView1.Rows[i].Tag = pagedRows[i]["ID_Client"].ToString();
                 }
 
-                // Скрываем служебные колонки если вдруг попали
                 HideColumn("ID_Client");
-
                 UpdatePaginationInfo();
             }
             catch (Exception ex)

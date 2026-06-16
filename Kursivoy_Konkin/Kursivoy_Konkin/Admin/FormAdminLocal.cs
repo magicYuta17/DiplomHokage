@@ -109,7 +109,7 @@ namespace Kursivoy_Konkin.Admin
                         query = $@"INSERT INTO contract (ID_Contract, Name_contract, date_signing, END_DATE, Clients_ID_Client, worker_ID_worker, object_ID_object, status_contract_id) 
                     VALUES ('{values[0]}', '{values[1]}', {ConvertDate(values[2])}, {ConvertDate(values[3])}, '{values[4]}', '{values[5]}', '{values[6]}', '{values[7]}')";
                         break;
-
+                    
                     case "object":
                         query = $@"INSERT INTO object (ID_object, name_object, square, cost, building_dates_plan, number_floors, parking_space, photo, IsDeleted, building_dates_fact, procent_prepay) 
     VALUES ('{values[0]}', '{values[1]}', '{values[2]}', '{values[3]}', {ConvertDate(values[4])}, '{values[5]}', 
@@ -117,12 +117,12 @@ namespace Kursivoy_Konkin.Admin
             {(string.IsNullOrEmpty(values[7]) ? "NULL" : $"'{values[7]}'")} , 
             '{values[8]}', {ConvertDate(values[9])},'{values[11]}')";
                         break;
-
+                    
                     case "role_worker":
                         query = $@"INSERT INTO role_worker (ID_Role, Role) 
                     VALUES ('{values[0]}', '{values[1]}')";
                         break;
-
+                    
                     case "status_client":
                         query = $@"INSERT INTO status_client (ID_Status_client, status, IsDeleted) 
                     VALUES ('{values[0]}', '{values[1]}', '{values[2]}')";

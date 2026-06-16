@@ -36,6 +36,7 @@
             // 
             // button1
             // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(204)))), ((int)(((byte)(153)))));
             this.button1.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
             this.button1.Location = new System.Drawing.Point(12, 539);
@@ -76,6 +77,7 @@
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.button1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimizeBox = false;
             this.Name = "FormViewObject";
             this.Text = "Просмотр объектов";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormViewObject_FormClosing);

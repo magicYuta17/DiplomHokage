@@ -71,6 +71,7 @@
             // 
             // buttonEditClient
             // 
+            this.buttonEditClient.AutoSize = true;
             this.buttonEditClient.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(204)))), ((int)(((byte)(153)))));
             this.buttonEditClient.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
             this.buttonEditClient.Location = new System.Drawing.Point(59, 451);
@@ -80,7 +81,6 @@
             this.buttonEditClient.TabIndex = 50;
             this.buttonEditClient.Text = "Сохранить редактирование";
             this.buttonEditClient.UseVisualStyleBackColor = false;
- 
             // 
             // label6
             // 
@@ -163,7 +163,7 @@
             // 
             this.maskedTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.maskedTextBox1.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
-            this.maskedTextBox1.Location = new System.Drawing.Point(557, 81);
+            this.maskedTextBox1.Location = new System.Drawing.Point(557, 82);
             this.maskedTextBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.maskedTextBox1.Mask = "+7 (000) 000-00-00";
             this.maskedTextBox1.Name = "maskedTextBox1";
@@ -173,6 +173,8 @@
             // 
             // button1
             // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button1.AutoSize = true;
             this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(204)))), ((int)(((byte)(153)))));
             this.button1.Font = new System.Drawing.Font("Comic Sans MS", 20.25F);
             this.button1.Location = new System.Drawing.Point(59, 545);
@@ -195,6 +197,7 @@
             // 
             // pictureBox2
             // 
+            this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
             this.pictureBox2.Location = new System.Drawing.Point(557, 407);
             this.pictureBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);

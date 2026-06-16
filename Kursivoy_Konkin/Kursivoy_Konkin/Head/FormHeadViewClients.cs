@@ -383,15 +383,25 @@ namespace Kursivoy_Konkin
         private void FormHeadViewClients_Load(object sender, EventArgs e)
         {
             isMasked = true;
-            
 
             FillTableData();
             UpdateClientBirthdaysAndAges();
 
-            comboBox1.Items.AddRange(new[] { "ФИО", "Статус", "LTV" });
-            comboBox2.Items.AddRange(new[] { "Все", "Больше 500 000", "Меньше 1 000 000", "Больше 2 000 000" });
+            // Добавляем "Без сортировки" первым пунктом
+            comboBox1.Items.Clear();
+            comboBox1.Items.AddRange(new[] { "Без сортировки", "ФИО", "Статус", "LTV" });
+            comboBox1.SelectedIndex = 0; // По умолчанию без сортировки
 
+            // "Все" уже первым пунктом
+            comboBox2.Items.Clear();
+            comboBox2.Items.AddRange(new[] { "Все", "Больше 500 000", "Меньше 1 000 000", "Больше 2 000 000" });
+            comboBox2.SelectedIndex = 0;
+
+            // Добавляем "Все" первым пунктом для статусов
+            comboBox3.Items.Clear();
+            comboBox3.Items.Add("Все");
             LoadStatusesToComboBox3();
+            comboBox3.SelectedIndex = 0;
         }
 
         private void LoadStatusesToComboBox3()
@@ -445,14 +455,14 @@ namespace Kursivoy_Konkin
                     row["ФИО сотрудника"] != DBNull.Value &&
                     row["ФИО сотрудника"].ToString().ToLower().Contains(employeeText));
 
-            // Фильтр по статусу
+            // Фильтр по статусу (пропускаем если выбрано "Все")
             if (comboBox3.SelectedItem != null && comboBox3.SelectedItem.ToString() != "Все")
             {
                 string sel = comboBox3.SelectedItem.ToString();
                 filteredData = filteredData.Where(row => row["Статус"].ToString() == sel);
             }
 
-            // Фильтр по LTV
+            // Фильтр по LTV (пропускаем если выбрано "Все")
             if (comboBox2.SelectedItem != null && comboBox2.SelectedItem.ToString() != "Все")
             {
                 switch (comboBox2.SelectedItem.ToString())
@@ -469,8 +479,8 @@ namespace Kursivoy_Konkin
                 }
             }
 
-            // Сортировка
-            if (comboBox1.SelectedItem != null)
+            // Сортировка (пропускаем если выбрано "Без сортировки")
+            if (comboBox1.SelectedItem != null && comboBox1.SelectedItem.ToString() != "Без сортировки")
             {
                 switch (comboBox1.SelectedItem.ToString())
                 {
@@ -508,7 +518,6 @@ namespace Kursivoy_Konkin
                     .Take(pageSize)
                     .ToList();
 
-                // ✅ Строим таблицу с маскировкой или без
                 dataGridView1.DataSource = BuildDisplayTable(pagedRows);
 
                 totalRecords = totalFilteredRecords;

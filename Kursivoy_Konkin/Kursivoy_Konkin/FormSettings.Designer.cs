@@ -205,7 +205,6 @@
             this.Controls.Add(this.lblCurrentTimeout);
             this.Controls.Add(this.numericTimeout);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormSettings";
             this.Text = "Настройки";

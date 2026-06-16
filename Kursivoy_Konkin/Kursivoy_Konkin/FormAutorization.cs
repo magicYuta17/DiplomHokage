@@ -21,7 +21,7 @@ namespace Kursivoy_Konkin
         {
             InitializeComponent();
             this.MinimizeBox = false;
-            this.MaximizeBox = false;
+            
             
 
 
@@ -49,7 +49,7 @@ namespace Kursivoy_Konkin
         private void Form1_Load(object sender, EventArgs e)
         {
             this.MinimizeBox = false;
-            this.MaximizeBox = false;
+
             
         }
 
