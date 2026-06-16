@@ -66,6 +66,7 @@ namespace Kursivoy_Konkin
 
         private void FormSettings_Load(object sender, EventArgs e)
         {
+            txtPassword.PasswordChar = '*';
             txtHost.Text = Properties.Settings.Default["host"].ToString();
             txtUid.Text = Properties.Settings.Default["uid"].ToString();
             txtPassword.Text = Properties.Settings.Default["pwd"].ToString();

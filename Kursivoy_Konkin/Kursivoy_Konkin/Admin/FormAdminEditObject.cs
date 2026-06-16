@@ -1,5 +1,4 @@
-﻿
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -26,6 +25,16 @@ namespace Kursivoy_Konkin
             this.MaximizeBox = false; // Запрет на разворачивание
         }
 
+        // Загружает изображение из файла без блокировки файла на диске
+        private System.Drawing.Image LoadImageFree(string path)
+        {
+            byte[] bytes = File.ReadAllBytes(path); // Читаем файл и сразу закрываем дескриптор
+            using (var ms = new MemoryStream(bytes))
+            {
+                return System.Drawing.Image.FromStream(new MemoryStream(ms.ToArray()));
+            }
+        }
+
         // Метод для настройки ограничений ввода в полях
         private void SetupFormConstraints()
         {
@@ -35,7 +44,6 @@ namespace Kursivoy_Konkin
             TextBoxFilters.InputValidators.ApplyNotEmptyValidation(txt_float);
             TextBoxFilters.InputValidators.ApplyNotEmptyValidation(txtParkingSpace);
             TextBoxFilters.InputValidators.ApplyNotEmptyValidation(txtDateDayPlan);
-
 
             TextBoxFilters.InputValidators.ApplyRussianWithDigitsAndComma(txtNameObject);
 
@@ -48,13 +56,13 @@ namespace Kursivoy_Konkin
             TextBoxFilters.InputValidators.ApplyNumericWithDecimal(txtDateDayPlan);
 
             // Устанавливаем максимальную длину для полей (ограничение на количество символов)
-            txt_Square.MaxLength = 4;       // Площадь (до 9999)
-            txtprocent_prepay.MaxLength = 2;       // Площадь (до 9999)
-            txtNameObject.MaxLength = 100;  // нАименование объекта
-            txtCost.MaxLength = 12;         // Стоимость (до 999999999999)
-            txt_float.MaxLength = 2;         // Количество этажей (до 99)
-            txtParkingSpace.MaxLength = 4;   // Площадь парковки (до 9999)
-            txtDateDayPlan.MaxLength = 4;        // Срок строительства в днях (до 9999)
+            txt_Square.MaxLength = 4;           // Площадь (до 9999)
+            txtprocent_prepay.MaxLength = 2;    // Предоплата (до 99)
+            txtNameObject.MaxLength = 100;      // Наименование объекта
+            txtCost.MaxLength = 12;             // Стоимость (до 999999999999)
+            txt_float.MaxLength = 2;            // Количество этажей (до 99)
+            txtParkingSpace.MaxLength = 4;      // Площадь парковки (до 9999)
+            txtDateDayPlan.MaxLength = 4;       // Срок строительства в днях (до 9999)
         }
 
         // Метод для загрузки данных объекта из БД
@@ -62,7 +70,7 @@ namespace Kursivoy_Konkin
         {
             try
             {
-                string query = "SELECT name_object, procent_prepay, square, cost, building_dates_plan,building_dates_fact, number_floors, parking_space, photo FROM object WHERE ID_object = @id";
+                string query = "SELECT name_object, procent_prepay, square, cost, building_dates_plan, building_dates_fact, number_floors, parking_space, photo FROM object WHERE ID_object = @id";
                 using (MySqlConnection conn = new MySqlConnection(connect.con))
                 {
                     conn.Open(); // Открываем соединение
@@ -75,14 +83,14 @@ namespace Kursivoy_Konkin
                             if (reader.Read()) // Если данные найдены
                             {
                                 // Заполняем поля формы данными из БД
-                                txt_Square.Text = reader["square"].ToString();           // Площадь
-                                txtCost.Text = reader["cost"].ToString();                 // Стоимость
-                                txtprocent_prepay.Text = reader["procent_prepay"].ToString();                 // предоплата
-                                txtNameObject.Text = reader["name_object"].ToString();    // Срок строительства (план)
-                                txtDateDayPlan.Text = reader["building_dates_plan"].ToString();    // Срок строительства (план)
-                                txtDateDayFact.Text = reader["building_dates_fact"].ToString();    // Срок строительства (фактический)
-                                txt_float.Text = reader["number_floors"].ToString();      // Количество этажей
-                                txtParkingSpace.Text = reader["parking_space"].ToString(); // Площадь парковки
+                                txt_Square.Text = reader["square"].ToString();                  // Площадь
+                                txtCost.Text = reader["cost"].ToString();                       // Стоимость
+                                txtprocent_prepay.Text = reader["procent_prepay"].ToString();   // Предоплата
+                                txtNameObject.Text = reader["name_object"].ToString();          // Наименование объекта
+                                txtDateDayPlan.Text = reader["building_dates_plan"].ToString(); // Срок строительства (план)
+                                txtDateDayFact.Text = reader["building_dates_fact"].ToString(); // Срок строительства (фактический)
+                                txt_float.Text = reader["number_floors"].ToString();            // Количество этажей
+                                txtParkingSpace.Text = reader["parking_space"].ToString();      // Площадь парковки
 
                                 // Сохраняем имя текущего фото
                                 currentPhoto = reader["photo"].ToString();
@@ -92,7 +100,7 @@ namespace Kursivoy_Konkin
                                 {
                                     string photoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "photo_object", currentPhoto);
                                     if (File.Exists(photoPath))
-                                        pictureBox1.Image = new System.Drawing.Bitmap(photoPath); // Отображаем фото
+                                        pictureBox1.Image = LoadImageFree(photoPath); // ✅ Файл не блокируется
                                 }
                             }
                             else
@@ -116,16 +124,16 @@ namespace Kursivoy_Konkin
             try
             {
                 // Преобразуем текстовые значения в числа
-                double square = Convert.ToDouble(txt_Square.Text);               // Площадь
-                double procent_prepay = Convert.ToDouble(txtprocent_prepay.Text);               // Площадь
-                double cost = Convert.ToDouble(txtCost.Text);                     // Стоимость
-                string nameob= txtNameObject.Text;                     // Наименование объекта
-                double parkingSpace = Convert.ToDouble(txtParkingSpace.Text);     // Площадь парковки
-                double floors = Convert.ToDouble(txt_float.Text);                 // Количество этажей
-                double dateDay = Convert.ToDouble(txtDateDayPlan.Text);               // Срок строительства
+                double square = Convert.ToDouble(txt_Square.Text);              // Площадь
+                double procent_prepay = Convert.ToDouble(txtprocent_prepay.Text); // Предоплата
+                double cost = Convert.ToDouble(txtCost.Text);                   // Стоимость
+                string nameob = txtNameObject.Text;                             // Наименование объекта
+                double parkingSpace = Convert.ToDouble(txtParkingSpace.Text);  // Площадь парковки
+                double floors = Convert.ToDouble(txt_float.Text);              // Количество этажей
+                double dateDay = Convert.ToDouble(txtDateDayPlan.Text);        // Срок строительства
 
                 // Если выбрали новое фото — копируем его
-                string photoName = currentPhoto; // по умолчанию оставляем старое
+                string photoName = currentPhoto; // По умолчанию оставляем старое
 
                 if (!string.IsNullOrEmpty(fullPath) && File.Exists(fullPath)) // Если выбрано новое фото
                 {
@@ -136,22 +144,22 @@ namespace Kursivoy_Konkin
                     // Используем оригинальное имя файла
                     string uniqueFileName = Path.GetFileName(fullPath);
                     string destinationPath = Path.Combine(photoDirectory, uniqueFileName);
-                    File.Copy(fullPath, destinationPath, true); // Копируем файл (с перезаписью)
+                    File.Copy(fullPath, destinationPath, true); // ✅ Теперь файл не занят — копирование пройдёт
 
                     photoName = uniqueFileName; // Сохраняем новое имя
                 }
 
                 // SQL-запрос на обновление данных объекта
                 string query = @"UPDATE object SET
-                                    square          = @square,
-                                    procent_prepay  = @procent_prepay,
-                                    name_object     = @name_object,
-                                    cost            = @cost,
-                                    building_dates_plan  = @building_dates_plan,
-                                    building_dates_fact  = @building_dates_fact,
-                                    number_floors   = @number_floors,
-                                    parking_space   = @parking_space,
-                                    photo           = @photo
+                                    square              = @square,
+                                    procent_prepay      = @procent_prepay,
+                                    name_object         = @name_object,
+                                    cost                = @cost,
+                                    building_dates_plan = @building_dates_plan,
+                                    building_dates_fact = @building_dates_fact,
+                                    number_floors       = @number_floors,
+                                    parking_space       = @parking_space,
+                                    photo               = @photo
                                  WHERE ID_object = @id";
 
                 using (MySqlConnection conn = new MySqlConnection(connect.con))
@@ -230,9 +238,9 @@ namespace Kursivoy_Konkin
                          fileInfo.Extension.Equals(".png", StringComparison.OrdinalIgnoreCase)) &&
                         fileInfo.Length <= 2 * 1024 * 1024)
                     {
-                        pictureBox1.Image = new System.Drawing.Bitmap(openFileDialog.FileName); // Отображаем фото
-                        fileName = fileInfo.Name; // Сохраняем имя файла
-                        fullPath = openFileDialog.FileName; // Сохраняем полный путь
+                        pictureBox1.Image = LoadImageFree(openFileDialog.FileName); // ✅ Файл не блокируется
+                        fileName = fileInfo.Name;             // Сохраняем имя файла
+                        fullPath = openFileDialog.FileName;  // Сохраняем полный путь
                     }
                     else
                     {
@@ -263,6 +271,9 @@ namespace Kursivoy_Konkin
         private void button3_Click(object sender, EventArgs e)
         {
             pictureBox1.Image = Properties.Resources.picture; // Устанавливаем изображение-заглушку
+            fullPath = null;      // Сбрасываем путь к новому файлу
+            fileName = null;      // Сбрасываем имя нового файла
+            currentPhoto = null;  // ✅ Сбрасываем текущее фото — при сохранении запишется NULL в БД
         }
 
         // Кнопка "Выбрать фото" (основная)
@@ -283,9 +294,9 @@ namespace Kursivoy_Konkin
                          fileInfo.Extension.Equals(".png", StringComparison.OrdinalIgnoreCase)) &&
                         fileInfo.Length <= 2 * 1024 * 1024)
                     {
-                        pictureBox1.Image = new System.Drawing.Bitmap(openFileDialog.FileName); // Отображаем фото
-                        fileName = fileInfo.Name; // Сохраняем имя файла
-                        fullPath = openFileDialog.FileName; // Сохраняем полный путь
+                        pictureBox1.Image = LoadImageFree(openFileDialog.FileName); // ✅ Файл не блокируется
+                        fileName = fileInfo.Name;             // Сохраняем имя файла
+                        fullPath = openFileDialog.FileName;  // Сохраняем полный путь
                     }
                     else
                     {
@@ -305,7 +316,7 @@ namespace Kursivoy_Konkin
         {
             if (e.CloseReason == CloseReason.UserClosing)
             {
-                e.Cancel = true; //отменяем закрытие формы
+                e.Cancel = true; // Отменяем закрытие формы
             }
         }
     }

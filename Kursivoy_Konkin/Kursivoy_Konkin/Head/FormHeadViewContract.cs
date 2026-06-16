@@ -188,5 +188,7 @@ namespace Kursivoy_Konkin
                 e.Cancel = true; //отменяем закрытие формы
             }
         }
+
+        
     }
 }

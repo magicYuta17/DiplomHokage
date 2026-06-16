@@ -124,12 +124,14 @@ namespace Kursivoy_Konkin
                             string photoPath = Path.Combine(photoDirectory, photoFileName.ToString());
                             System.Diagnostics.Debug.WriteLine($"Путь к фото: {photoPath}"); // Отладочный вывод
 
-                            if (File.Exists(photoPath)) // Если файл существует
+                            if (File.Exists(photoPath))
                             {
-                                // Загружаем изображение и создаем его копию (чтобы не блокировать файл)
-                                using (var img = Image.FromFile(photoPath))
+                                // Было: using (var img = Image.FromFile(photoPath)) { row.Cells["Фото"].Value = new Bitmap(img); }
+                                // ✅ Стало: читаем через байты, файл не блокируется
+                                byte[] bytes = File.ReadAllBytes(photoPath);
+                                using (var ms = new MemoryStream(bytes))
                                 {
-                                    row.Cells["Фото"].Value = new Bitmap(img);
+                                    row.Cells["Фото"].Value = new Bitmap(ms);
                                 }
                             }
                             else
