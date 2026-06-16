@@ -36,8 +36,17 @@ CREATE TABLE `clients` (
   PRIMARY KEY (`ID_Client`),
   KEY `fk_Clients_Status_client1_idx` (`Status_client_ID_Status_client`),
   CONSTRAINT `fk_Clients_Status_client1` FOREIGN KEY (`Status_client_ID_Status_client`) REFERENCES `status_client` (`ID_Status_client`)
-) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `clients`
+--
+
+LOCK TABLES `clients` WRITE;
+/*!40000 ALTER TABLE `clients` DISABLE KEYS */;
+/*!40000 ALTER TABLE `clients` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `contract`
@@ -65,6 +74,15 @@ CREATE TABLE `contract` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `contract`
+--
+
+LOCK TABLES `contract` WRITE;
+/*!40000 ALTER TABLE `contract` DISABLE KEYS */;
+/*!40000 ALTER TABLE `contract` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `object`
 --
 
@@ -89,6 +107,15 @@ CREATE TABLE `object` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `object`
+--
+
+LOCK TABLES `object` WRITE;
+/*!40000 ALTER TABLE `object` DISABLE KEYS */;
+/*!40000 ALTER TABLE `object` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `role_worker`
 --
 
@@ -99,8 +126,18 @@ CREATE TABLE `role_worker` (
   `ID_Role` int NOT NULL AUTO_INCREMENT,
   `Role` varchar(45) NOT NULL,
   PRIMARY KEY (`ID_Role`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `role_worker`
+--
+
+LOCK TABLES `role_worker` WRITE;
+/*!40000 ALTER TABLE `role_worker` DISABLE KEYS */;
+INSERT INTO `role_worker` VALUES (1,'Админ'),(2,'Менеджер'),(3,'Руководитель');
+/*!40000 ALTER TABLE `role_worker` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `status_client`
@@ -118,6 +155,15 @@ CREATE TABLE `status_client` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `status_client`
+--
+
+LOCK TABLES `status_client` WRITE;
+/*!40000 ALTER TABLE `status_client` DISABLE KEYS */;
+/*!40000 ALTER TABLE `status_client` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `status_contract`
 --
 
@@ -132,6 +178,15 @@ CREATE TABLE `status_contract` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `status_contract`
+--
+
+LOCK TABLES `status_contract` WRITE;
+/*!40000 ALTER TABLE `status_contract` DISABLE KEYS */;
+/*!40000 ALTER TABLE `status_contract` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `worker`
 --
 
@@ -140,7 +195,7 @@ DROP TABLE IF EXISTS `worker`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `worker` (
   `ID_worker` int NOT NULL AUTO_INCREMENT,
-  `ID_Clientsl` varchar(45) NOT NULL,
+  `ID_Clientsl` varchar(45) DEFAULT NULL,
   `FIO` varchar(100) DEFAULT NULL,
   `Age` int DEFAULT NULL,
   `phone` varchar(45) NOT NULL,
@@ -156,12 +211,47 @@ CREATE TABLE `worker` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `worker`
+--
+
+LOCK TABLES `worker` WRITE;
+/*!40000 ALTER TABLE `worker` DISABLE KEYS */;
+/*!40000 ALTER TABLE `worker` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Dumping events for database 'mydb'
 --
 
 --
 -- Dumping routines for database 'mydb'
 --
+/*!50003 DROP PROCEDURE IF EXISTS `FillWorkerPhotos` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `FillWorkerPhotos`()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    
+    WHILE i <= 50 DO
+        INSERT INTO worker (photo) 
+        VALUES (CONCAT(i, '.png'));
+        
+        SET i = i + 1;
+    END WHILE;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -172,4 +262,4 @@ CREATE TABLE `worker` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-06-13  8:44:07
+-- Dump completed on 2026-06-16 15:09:08

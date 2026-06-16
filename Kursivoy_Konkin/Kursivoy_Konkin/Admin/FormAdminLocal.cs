@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 
 namespace Kursivoy_Konkin.Admin
 {
@@ -54,9 +50,9 @@ namespace Kursivoy_Konkin.Admin
             }
         }
 
-        
 
-       
+
+
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -106,25 +102,25 @@ namespace Kursivoy_Konkin.Admin
                     VALUES ('{values[0]}', '{values[1]}', '{values[2]}', '{values[3]}', 
                             {(string.IsNullOrEmpty(values[4]) ? "NULL" : $"'{values[4]}'")} , 
                             {(string.IsNullOrEmpty(values[5]) ? "NULL" : $"'{values[5]}'")} , 
-                            {ConvertDate(values[6])}, '{values[7]}' )";
+                            {ConvertDate(values[6])}, '{values[7]}')";
                         break;
 
                     case "contract":
-                        query = $@"INSERT INTO contract (Name_contract, date_signing, END_DATE, Clients_ID_Client, worker_ID_worker, connection_contract_object_ID_object) 
-                    VALUES ('{values[0]}', '{values[1]}', '{values[2]}', '{values[3]}', '{values[4]}', '{values[5]}')";
+                        query = $@"INSERT INTO contract (ID_Contract, Name_contract, date_signing, END_DATE, Clients_ID_Client, worker_ID_worker, object_ID_object, status_contract_id) 
+                    VALUES ('{values[0]}', '{values[1]}', {ConvertDate(values[2])}, {ConvertDate(values[3])}, '{values[4]}', '{values[5]}', '{values[6]}', '{values[7]}')";
                         break;
 
                     case "object":
-                        query = $@"INSERT INTO object (name_object, square, cost, building_dates, number_floors, parking_space, connection_contract_object_ID_object, photo, IsDeleted) 
-                    VALUES ('{values[0]}', '{values[1]}', '{values[2]}', {ConvertDate(values[3])}, '{values[4]}', '{values[5]}', 
-                            {(string.IsNullOrEmpty(values[6]) ? "NULL" : $"'{values[6]}'")} , 
-                            {(string.IsNullOrEmpty(values[7]) ? "NULL" : $"'{values[7]}'")} , 
-                            '{values[8]}')";
+                        query = $@"INSERT INTO object (ID_object, name_object, square, cost, building_dates_plan, number_floors, parking_space, photo, IsDeleted, building_dates_fact, procent_prepay) 
+    VALUES ('{values[0]}', '{values[1]}', '{values[2]}', '{values[3]}', {ConvertDate(values[4])}, '{values[5]}', 
+            {(string.IsNullOrEmpty(values[6]) ? "NULL" : $"'{values[6]}'")} , 
+            {(string.IsNullOrEmpty(values[7]) ? "NULL" : $"'{values[7]}'")} , 
+            '{values[8]}', {ConvertDate(values[9])},'{values[11]}')";
                         break;
 
                     case "role_worker":
-                        query = $@"INSERT INTO role_worker (Role) 
-                    VALUES ('{values[0]}')";
+                        query = $@"INSERT INTO role_worker (ID_Role, Role) 
+                    VALUES ('{values[0]}', '{values[1]}')";
                         break;
 
                     case "status_client":
@@ -132,15 +128,19 @@ namespace Kursivoy_Konkin.Admin
                     VALUES ('{values[0]}', '{values[1]}', '{values[2]}')";
                         break;
 
+                    case "status_contract":
+                        query = $@"INSERT INTO status_contract (status_contract_id, status_contract_name) 
+                    VALUES ('{values[0]}', '{values[1]}')";
+                        break;
 
                     case "worker":
-                        query = $@"INSERT INTO worker (ID_Clientsl, FIO, Age, phone, Role_worker_ID_Role, IsDeleted, photo, password) 
+                        query = $@"INSERT INTO worker (ID_worker, ID_Clientsl, FIO, Age, phone, Role_worker_ID_Role, IsDeleted, photo, password) 
                     VALUES ('{values[0]}', 
                             {(string.IsNullOrEmpty(values[1]) ? "NULL" : $"'{values[1]}'")} , 
                             {(string.IsNullOrEmpty(values[2]) ? "NULL" : $"'{values[2]}'")} , 
                             '{values[3]}', '{values[4]}', '{values[5]}', 
                             {(string.IsNullOrEmpty(values[6]) ? "NULL" : $"'{values[6]}'")} , 
-                            '{values[7]}')";
+                            '{values[7]}', '{values[8]}')";
                         break;
                 }
                 MySqlCommand command = new MySqlCommand(query, connection);
@@ -150,10 +150,10 @@ namespace Kursivoy_Konkin.Admin
             return res;
         }
 
-      
 
 
-       
+
+
 
         private void FormAdminLocal_Load(object sender, EventArgs e)
         {
@@ -267,7 +267,7 @@ namespace Kursivoy_Konkin.Admin
                     string textFile = File.ReadAllText(pathFile);
 
                     // Подключаемся БЕЗ базы данных
-                    
+
                     MySqlConnection mySqlConnection = new MySqlConnection(connect.conNoDb);
                     mySqlConnection.Open();
 

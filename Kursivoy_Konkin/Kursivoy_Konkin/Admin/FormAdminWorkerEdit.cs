@@ -280,16 +280,21 @@ namespace Kursivoy_Konkin
                 return;
             }
 
-            if (dgvClients.SelectedRows.Count == 0) // Проверка выбора клиента
-            {
-                MessageBox.Show("Выберите клиента из списка.", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            //if (dgvClients.SelectedRows.Count == 0) // Проверка выбора клиента
+            //{
+            //    MessageBox.Show("Выберите клиента из списка.", "Ошибка",
+            //        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //    return;
+            //}
 
             try
             {
-                int clientId = Convert.ToInt32(dgvClients.SelectedRows[0].Cells["ID_Client"].Value); // ID клиента
+                int? clientId = null;
+                // Получаем ID выбранного клиента из скрытой колонки
+                if (dgvClients.SelectedRows.Count != 0)
+                {
+                    clientId = Convert.ToInt32(dgvClients.SelectedRows[0].Cells["ID_Client"].Value);
+                }
                 int roleId = Convert.ToInt32(cbRole.SelectedValue); // ID роли
                 int age = Convert.ToInt32(tbAge.Text); // Возраст
 

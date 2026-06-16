@@ -19,10 +19,8 @@ namespace Kursivoy_Konkin.Admin
                 DialogResult result = MessageBox.Show("Вы уверены, что хотите восстановить базу данных?", "Внимание", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (result == DialogResult.Yes)
                 {
-                    // Правильное формирование пути
-                    string pathFile = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\dumb and dll\db.sql"));
+                    string pathFile = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\dumb and dll\only_structure.sql"));
 
-                    // Проверяем существование файла
                     if (!File.Exists(pathFile))
                     {
                         MessageBox.Show($"Файл не найден:\n{pathFile}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -31,32 +29,38 @@ namespace Kursivoy_Konkin.Admin
 
                     string textFile = File.ReadAllText(pathFile);
 
-                    // Подключаемся БЕЗ базы данных
-
                     MySqlConnection mySqlConnection = new MySqlConnection(connect.conNoDb);
                     mySqlConnection.Open();
 
-                    // Создаем базу
                     MySqlCommand createDbCommand = new MySqlCommand("CREATE DATABASE IF NOT EXISTS mydb", mySqlConnection);
                     createDbCommand.ExecuteNonQuery();
 
-                    // Выбираем базу
                     MySqlCommand useDbCommand = new MySqlCommand("USE mydb", mySqlConnection);
                     useDbCommand.ExecuteNonQuery();
 
-                    // Выполняем скрипт
-                    MySqlCommand mySqlCommand = new MySqlCommand(textFile, mySqlConnection);
-                    mySqlCommand.ExecuteNonQuery();
+                    string[] sqlCommands = textFile
+                        .Split(new[] { ";;" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    foreach (string sqlCommand in sqlCommands)
+                    {
+                        string command = sqlCommand.Trim();
+                        if (!string.IsNullOrEmpty(command) &&
+                            !command.StartsWith("DELIMITER", StringComparison.OrdinalIgnoreCase))
+                        {
+                            MySqlCommand cmd = new MySqlCommand(command, mySqlConnection);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                    
 
                     mySqlConnection.Close();
 
                     MessageBox.Show("База данных успешно восстановлена!", "Сообщение пользователю", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
             }
         }
 
