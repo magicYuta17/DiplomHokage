@@ -11,6 +11,7 @@ namespace Kursivoy_Konkin
     {
         private int workerId; // ID редактируемого сотрудника
         private string currentPhoto; // Имя текущего файла фото
+        private bool allowClose = false; // Флаг для разрешения программного закрытия формы
 
         public string fileName; // Имя выбранного файла
         public string fullPath; // Полный путь к выбранному файлу
@@ -188,9 +189,12 @@ namespace Kursivoy_Konkin
                                         pictureBox1.Image = LoadImageFree(photoPath); // ✅ Файл не блокируется
                                 }
 
-                                // Выделяем текущего клиента в dgvClients
-                                int clientId = Convert.ToInt32(reader["ID_Clientsl"]);
-                                SelectClientInGrid(clientId);
+                                // Выделяем текущего клиента в dgvClients (с проверкой на DBNull)
+                                if (reader["ID_Clientsl"] != DBNull.Value)
+                                {
+                                    int clientId = Convert.ToInt32(reader["ID_Clientsl"]);
+                                    SelectClientInGrid(clientId);
+                                }
                             }
                         }
                     }
@@ -222,6 +226,7 @@ namespace Kursivoy_Konkin
         {
             FormAdminWorker f = new FormAdminWorker(); // Создаем форму списка сотрудников
             this.Visible = false; // Скрываем текущую форму
+            allowClose = true; // Разрешаем программное закрытие
             f.ShowDialog(); // Показываем форму списка
             this.Close(); // Закрываем текущую форму
         }
@@ -333,12 +338,12 @@ namespace Kursivoy_Konkin
                     {
                         // Добавляем параметры
                         cmd.Parameters.Add("@fio", MySqlDbType.VarChar, 100).Value = tbFIO.Text.Trim();
-                        cmd.Parameters.Add("@clientId", MySqlDbType.VarChar, 45).Value = clientId.ToString();
+                        // ✅ Исправлено: защита от NullReferenceException, если клиент не выбран
+                        cmd.Parameters.Add("@clientId", MySqlDbType.VarChar, 45).Value = clientId.HasValue ? (object)clientId.Value.ToString() : DBNull.Value;
                         cmd.Parameters.Add("@phone", MySqlDbType.VarChar, 45).Value = mtbPhone.Text;
                         cmd.Parameters.Add("@age", MySqlDbType.Int32).Value = age;
                         cmd.Parameters.Add("@roleId", MySqlDbType.Int32).Value = roleId;
-                        cmd.Parameters.Add("@photo", MySqlDbType.VarChar, 100).Value =
-                            (object)photoName ?? DBNull.Value; // Если фото нет, записываем NULL
+                        cmd.Parameters.Add("@photo", MySqlDbType.VarChar, 100).Value = string.IsNullOrEmpty(photoName) ? (object)DBNull.Value : photoName;
                         cmd.Parameters.Add("@id", MySqlDbType.Int32).Value = workerId;
 
                         cmd.ExecuteNonQuery(); // Выполняем запрос
@@ -347,6 +352,8 @@ namespace Kursivoy_Konkin
 
                 MessageBox.Show("Данные сотрудника обновлены!", "Успех",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                allowClose = true; // Разрешаем программное закрытие
                 this.Close(); // Закрываем форму
             }
             catch (Exception ex)
@@ -370,15 +377,18 @@ namespace Kursivoy_Konkin
         {
             FormAdminWorker f = new FormAdminWorker(); // Создаем форму списка сотрудников
             this.Visible = false; // Скрываем текущую форму
+            allowClose = true; // Разрешаем программное закрытие
             f.ShowDialog(); // Показываем форму списка
             this.Close(); // Закрываем текущую форму
         }
 
         private void FormAdminWorkerEdit_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.UserClosing)
+            // ✅ Исправлено: Блокируем закрытие только при клике на крестик пользователем, 
+            // но не мешаем работе кнопок Сохранить/Отмена (благодаря флагу allowClose)
+            if (e.CloseReason == CloseReason.UserClosing && !allowClose)
             {
-                e.Cancel = true; //отменяем закрытие формы
+                e.Cancel = true; // отменяем закрытие формы через крестик
             }
         }
     }
