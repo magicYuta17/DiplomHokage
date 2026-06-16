@@ -75,6 +75,11 @@ namespace Kursivoy_Konkin
                 // Очистка всех колонок у DataGridView перед загрузкой новых данных
                 dataGridView1.Columns.Clear();
                 dataGridView1.AutoGenerateColumns = true; // Автоматическая генерация колонок из DataTable
+                dataGridView1.AllowUserToAddRows = false;
+                dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                dataGridView1.MultiSelect = false;
+                dataGridView1.ReadOnly = true;
+                dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
                 // SQL-запрос для получения информации об объектах
                 string query = @"
@@ -198,7 +203,7 @@ namespace Kursivoy_Konkin
                         col.SortMode = DataGridViewColumnSortMode.NotSortable;
 
                     // Устанавливаем высоту строк
-                    dataGridView1.RowTemplate.Height = 80;
+                   // dataGridView1.RowTemplate.Height = 80;
 
                     // Снимаем выделение со строк
                     dataGridView1.ClearSelection();
